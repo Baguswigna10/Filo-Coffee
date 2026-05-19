@@ -54,4 +54,21 @@
                     </a>
                 </td>
             </tr>
-           
+            @empty
+            <tr>
+                <td colspan="7" class="!py-16 text-center">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-12 h-12 bg-white/[0.03] rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-cream/15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        </div>
+                        <p class="text-cream/25 text-sm">Belum ada pesanan.</p>
+                    </div>
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-6 pagination-wrapper">{{ $orders->links() }}</div>
+@endsection
