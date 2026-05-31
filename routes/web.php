@@ -5,6 +5,9 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReservationController;
@@ -15,6 +18,8 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminReservationController;
 use App\Http\Controllers\PosController;
+use App\Http\Controllers\Admin\AdminPageController;
+use App\Http\Controllers\MidtransController;
 use Illuminate\Support\Facades\Route;
 
 // ============================================================
@@ -34,15 +39,39 @@ Route::get('/about',   [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact',[HomeController::class, 'sendContact'])->name('contact.send');
 
-// Menu (Display Only)
-Route::get('/menu', [MenuController::class, 'index'])->name('menu');
+// Menu
+Route::get('/menu',         [MenuController::class, 'index'])->name('menu');
+Route::get('/menu/{menu}',  [MenuController::class, 'show'])->name('menu.show');
 
 // Shop Beans
 Route::get('/shop',         [ProductController::class, 'index'])->name('shop');
 Route::get('/shop/{product}', [ProductController::class, 'show'])->name('shop.show');
 
+// Membership
+Route::get('/membership',   [MemberController::class, 'index'])->name('member');
+Route::post('/membership/register', [MemberController::class, 'register'])->name('member.register');
+
+// Services
+Route::get('/services',     [ServiceController::class, 'index'])->name('services');
+
+// News/Magazine
+Route::get('/news',         [NewsController::class, 'index'])->name('news');
+Route::get('/news/{slug}',  [NewsController::class, 'show'])->name('news.show');
+
 // PlayStation Info (public view)
 Route::get('/playstation', [PSReservationController::class, 'index'])->name('playstation.index');
+
+// ============================================================
+// MIDTRANS ROUTES
+// ============================================================
+// Webhook from Midtrans (no CSRF - exempted in bootstrap/app.php)
+Route::post('/midtrans/notification', [MidtransController::class, 'notification'])
+    ->name('midtrans.notification');
+
+// Re-generate snap token for existing order (authenticated)
+Route::post('/midtrans/pay/{order}', [MidtransController::class, 'pay'])
+    ->middleware('auth')
+    ->name('midtrans.pay');
 
 // ============================================================
 // AUTHENTICATED ROUTES
@@ -81,10 +110,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Menu CRUD
-    Route::resource('menus', AdminMenuController::class);
+    Route::resource('menus', AdminMenuController::class)->except(['show']);
 
     // Products CRUD
-    Route::resource('products', AdminProductController::class);
+    Route::resource('products', AdminProductController::class)->except(['show']);
 
     // Orders
     Route::get('orders',                             [AdminOrderController::class, 'index'])->name('orders.index');
@@ -104,5 +133,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('pos',          [PosController::class, 'store'])->name('pos.store');
     Route::get('pos/history',   [PosController::class, 'history'])->name('pos.history');
     Route::get('pos/history/{id}', [PosController::class, 'show'])->name('pos.show');
+
+    // Page Management
+    Route::get('pages',         [AdminPageController::class, 'index'])->name('pages.index');
+    Route::patch('pages/{page}/toggle', [AdminPageController::class, 'toggle'])->name('pages.toggle');
 });
 
