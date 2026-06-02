@@ -1,41 +1,34 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use App\Models\Menu;
-use App\Models\Product;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class HomeController extends Controller
+class Cart extends Model
 {
-    public function index()
-    {
-        $featuredMenus    = Menu::available()->featured()->orderBy('sort_order')->take(6)->get();
-        $featuredProducts = Product::featured()->inStock()->take(4)->get();
+    use HasFactory;
 
-        return view('pages.home', compact('featuredMenus', 'featuredProducts'));
+    protected $fillable = ['user_id', 'product_id', 'menu_id', 'quantity'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
-    public function about()
+    public function product()
     {
-        return view('pages.about');
+        return $this->belongsTo(Product::class);
     }
 
-    public function contact()
+    public function menu()
     {
-        return view('pages.contact');
+        return $this->belongsTo(Menu::class);
     }
 
-    public function sendContact(Request $request)
+    public function getSubtotalAttribute(): float
     {
-        $request->validate([
-            'name'    => 'required|string|max:100',
-            'email'   => 'required|email',
-            'subject' => 'required|string|max:200',
-            'message' => 'required|string|max:2000',
-        ]);
-
-        // In production: send email via Mail::to(...)->send(...)
-        return back()->with('success', 'Pesan Anda telah terkirim! Kami akan segera membalas.');
+        $price = $this->product_id ? $this->product->price : $this->menu->price;
+        return $this->quantity * $price;
     }
 }

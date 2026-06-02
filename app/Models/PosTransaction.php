@@ -16,6 +16,8 @@ class PosTransaction extends Model
         'cash_change',
         'notes',
         'user_id',
+        'payment_method',
+        'midtrans_token',
     ];
 
     protected $casts = [

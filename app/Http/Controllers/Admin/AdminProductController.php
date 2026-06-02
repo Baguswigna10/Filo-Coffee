@@ -58,7 +58,7 @@ class AdminProductController extends Controller
     {
         if ($product->image) Storage::disk('public')->delete($product->image);
         $product->delete();
-        return back()->with('success', 'Produk berhasil dihapus.');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 
     private function validateProduct(Request $request): array

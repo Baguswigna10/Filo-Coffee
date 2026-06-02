@@ -9,7 +9,7 @@ class Cart extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'product_id', 'quantity'];
+    protected $fillable = ['user_id', 'product_id', 'menu_id', 'quantity'];
 
     public function user()
     {
@@ -21,8 +21,14 @@ class Cart extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class);
+    }
+
     public function getSubtotalAttribute(): float
     {
-        return $this->quantity * $this->product->price;
+        $price = $this->product_id ? $this->product->price : $this->menu->price;
+        return $this->quantity * $price;
     }
 }

@@ -58,14 +58,14 @@ class AdminMenuController extends Controller
     {
         if ($menu->image) Storage::disk('public')->delete($menu->image);
         $menu->delete();
-        return back()->with('success', 'Menu berhasil dihapus.');
+        return redirect()->route('admin.menus.index')->with('success', 'Menu berhasil dihapus.');
     }
 
     private function validateMenu(Request $request): array
     {
         return $request->validate([
             'name'         => 'required|string|max:150',
-            'category'     => 'required|in:Coffee,Non-Coffee,Food,Dessert,Seasonal',
+            'category'     => 'required|in:Manual Brew,Non-Coffee,Coffee,Signature',
             'description'  => 'nullable|string|max:1000',
             'price'        => 'required|numeric|min:0',
             'image'        => 'nullable|image|max:2048',

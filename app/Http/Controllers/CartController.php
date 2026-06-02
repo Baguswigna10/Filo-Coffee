@@ -20,17 +20,25 @@ class CartController extends Controller
     public function add(Request $request)
     {
         $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'product_id' => 'nullable|exists:products,id',
+            'menu_id'    => 'nullable|exists:menus,id',
             'quantity'   => 'required|integer|min:1|max:99',
         ]);
 
-        $result = $this->cartService->addToCart($request->product_id, $request->quantity);
+        if (!$request->product_id && !$request->menu_id) {
+            return back()->with('error', 'Pilih item yang ingin dipesan.');
+        }
+
+        $result = $this->cartService->addToCart($request->product_id, $request->quantity, $request->menu_id);
 
         if ($request->expectsJson()) {
             return response()->json($result);
         }
 
         if ($result['success']) {
+            if ($request->redirect_to === 'checkout') {
+                return redirect()->route('checkout');
+            }
             return back()->with('success', $result['message']);
         }
 

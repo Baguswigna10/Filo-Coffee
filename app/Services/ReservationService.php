@@ -27,6 +27,7 @@ class ReservationService
             'reservation_time' => $data['reservation_time'],
             'guest_count'      => $data['guest_count'],
             'area'             => $data['area'],
+            'table_number'     => $data['table_number'],
             'status'           => 'Pending',
             'special_request'  => $data['special_request'] ?? null,
         ]);
@@ -45,8 +46,21 @@ class ReservationService
             throw new \Exception('Jam operasional kami: ' . self::OPEN_HOUR . ' - ' . self::CLOSE_HOUR . '.');
         }
 
+        $area = $data['area'];
+        $tableNumber = $data['table_number'] ?? null;
+        $tablesList = TableReservation::getTablesList();
+
+        if (!$tableNumber || !isset($tablesList[$area]) || !in_array($tableNumber, $tablesList[$area])) {
+            throw new \Exception('Nomor meja atau ruangan tidak valid untuk area yang dipilih.');
+        }
+
+        if (TableReservation::isTableBooked($data['reservation_date'], $time, $tableNumber)) {
+            $formattedDate = $date->translatedFormat('d F Y');
+            throw new \Exception("Tempat sudah full/sudah dibooking! Meja atau ruangan \"{$tableNumber}\" sudah dipesan untuk tanggal {$formattedDate} jam {$time} WIB. Silahkan pilih meja/ruangan atau jam lain.");
+        }
+
         if (!TableReservation::isSlotAvailable($data['reservation_date'], $time, $data['area'], self::TABLE_CAPACITY_PER_SLOT)) {
-            throw new \Exception('Slot waktu dan area ini sudah penuh. Silahkan pilih waktu atau area lain.');
+            throw new \Exception('Slot waktu dan area ini secara keseluruhan sudah penuh. Silahkan pilih waktu atau area lain.');
         }
     }
 

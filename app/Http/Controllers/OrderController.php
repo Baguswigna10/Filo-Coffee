@@ -23,7 +23,12 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $order->load('items.product');
+        // Automatically sync payment status with Midtrans if pending
+        if ($order->status === 'Pending' && $order->payment_method === 'Midtrans') {
+            app(\App\Services\MidtransService::class)->syncPaymentStatus($order);
+        }
+
+        $order->load(['items.product', 'items.menu']);
 
         return view('pages.order-detail', compact('order'));
     }

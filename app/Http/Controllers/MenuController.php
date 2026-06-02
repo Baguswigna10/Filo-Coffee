@@ -21,4 +21,12 @@ class MenuController extends Controller
 
         return view('pages.menu', compact('menus', 'categories', 'category'));
     }
+
+    public function show(Menu $menu)
+    {
+        if (!$menu->is_available) {
+            abort(404);
+        }
+        return view('pages.menu-detail', compact('menu'));
+    }
 }

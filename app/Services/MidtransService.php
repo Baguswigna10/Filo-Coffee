@@ -6,6 +6,7 @@ use App\Models\Order;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
+use Midtrans\Transaction;
 
 class MidtransService
 {
@@ -80,5 +81,93 @@ class MidtransService
     public function parseNotification(): Notification
     {
         return new Notification();
+    }
+
+    /**
+     * Generate a Midtrans Snap token for a POS (kasir) QRIS transaction.
+     */
+    public function generatePosQrisToken(\App\Models\PosTransaction $transaction, array $cartItems): string
+    {
+        $itemDetails = [];
+        foreach ($cartItems as $item) {
+            $itemDetails[] = [
+                'id'       => 'MENU-' . $item['id'],
+                'price'    => (int) $item['price'],
+                'quantity' => (int) $item['quantity'],
+                'name'     => mb_substr($item['name'], 0, 50),
+            ];
+        }
+
+        $params = [
+            'transaction_details' => [
+                'order_id'     => $transaction->transaction_number,
+                'gross_amount' => (int) $transaction->total_price,
+            ],
+            'item_details'     => $itemDetails,
+            'customer_details' => [
+                'first_name' => 'Pelanggan',
+                'email'      => 'pelanggan@filocoffee.com',
+            ],
+            'enabled_payments' => ['qris', 'gopay', 'shopeepay'],
+        ];
+
+        return Snap::getSnapToken($params);
+    }
+
+    /**
+     * Check QRIS payment status for a POS transaction.
+     */
+    public function checkPosTransactionStatus(string $transactionNumber): ?string
+    {
+        try {
+            $statusResponse = Transaction::status($transactionNumber);
+            return is_object($statusResponse)
+                ? ($statusResponse->transaction_status ?? null)
+                : ($statusResponse['transaction_status'] ?? null);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Fetch status from Midtrans and sync it locally if needed.
+     */
+    public function syncPaymentStatus(Order $order): void
+    {
+        if ($order->status !== 'Pending' || $order->payment_method !== 'Midtrans') {
+            return;
+        }
+
+        try {
+            $statusResponse = Transaction::status($order->order_number);
+            
+            $transactionStatus = is_object($statusResponse) 
+                ? ($statusResponse->transaction_status ?? null) 
+                : ($statusResponse['transaction_status'] ?? null);
+                
+            $fraudStatus = is_object($statusResponse) 
+                ? ($statusResponse->fraud_status ?? null) 
+                : ($statusResponse['fraud_status'] ?? null);
+
+            if ($transactionStatus === 'capture') {
+                if ($fraudStatus === 'accept') {
+                    $order->update([
+                        'status' => 'Paid',
+                        'paid_at' => now(),
+                    ]);
+                }
+            } elseif ($transactionStatus === 'settlement') {
+                $order->update([
+                    'status' => 'Paid',
+                    'paid_at' => now(),
+                ]);
+            } elseif (in_array($transactionStatus, ['cancel', 'deny', 'expire'])) {
+                $order->update([
+                    'status' => 'Cancelled',
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::info("Midtrans sync status error for {$order->order_number}: " . $e->getMessage());
+        }
     }
 }

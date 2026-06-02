@@ -61,5 +61,8 @@ class DatabaseSeeder extends Seeder
                 [...$product, 'is_active' => true]
             );
         }
+        $this->call([
+            PageSeeder::class,
+        ]);
     }
 }

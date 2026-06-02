@@ -129,10 +129,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('reservations/playstation/{psReservation}/status', [AdminReservationController::class, 'psUpdateStatus'])->name('reservations.ps.status');
 
     // POS (Kasir Mode)
-    Route::get('pos',           [PosController::class, 'index'])->name('pos.index');
-    Route::post('pos',          [PosController::class, 'store'])->name('pos.store');
-    Route::get('pos/history',   [PosController::class, 'history'])->name('pos.history');
-    Route::get('pos/history/{id}', [PosController::class, 'show'])->name('pos.show');
+    Route::get('pos',                   [PosController::class, 'index'])->name('pos.index');
+    Route::post('pos',                  [PosController::class, 'store'])->name('pos.store');
+    Route::post('pos/qris',             [PosController::class, 'createQris'])->name('pos.qris');
+    Route::get('pos/qris/{id}/status',  [PosController::class, 'checkQrisStatus'])->name('pos.qris.status');
+    Route::get('pos/history',           [PosController::class, 'history'])->name('pos.history');
+    Route::get('pos/history/{id}',      [PosController::class, 'show'])->name('pos.show');
 
     // Page Management
     Route::get('pages',         [AdminPageController::class, 'index'])->name('pages.index');

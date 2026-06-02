@@ -41,4 +41,14 @@ class Menu extends Model
     {
         return $query->where('is_featured', true);
     }
+
+    public function cartItems()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

@@ -10,7 +10,7 @@ class OrderItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id', 'product_id', 'product_name', 'quantity', 'price', 'subtotal',
+        'order_id', 'product_id', 'menu_id', 'product_name', 'quantity', 'price', 'subtotal',
     ];
 
     protected $casts = [
@@ -26,5 +26,10 @@ class OrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class);
     }
 }

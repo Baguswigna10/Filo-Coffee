@@ -23,12 +23,12 @@ class OrderService
 
             // Validate stock
             foreach ($cartItems as $item) {
-                if ($item->product->stock < $item->quantity) {
+                if ($item->product_id && $item->product->stock < $item->quantity) {
                     throw new \Exception("Stok {$item->product->name} tidak mencukupi.");
                 }
             }
 
-            $subtotal = $cartItems->sum(fn($i) => $i->quantity * $i->product->price);
+            $subtotal = $this->cartService->getTotal();
             $shippingCost = $data['shipping_cost'] ?? 15000;
             $total = $subtotal + $shippingCost;
 
@@ -51,17 +51,24 @@ class OrderService
 
             // Create order items & reduce stock
             foreach ($cartItems as $item) {
+                $isMenu = (bool)$item->menu_id;
+                $object = $isMenu ? $item->menu : $item->product;
+                $price  = $object->price;
+
                 OrderItem::create([
                     'order_id'     => $order->id,
                     'product_id'   => $item->product_id,
-                    'product_name' => $item->product->name,
+                    'menu_id'      => $item->menu_id,
+                    'product_name' => $object->name,
                     'quantity'     => $item->quantity,
-                    'price'        => $item->product->price,
-                    'subtotal'     => $item->quantity * $item->product->price,
+                    'price'        => $price,
+                    'subtotal'     => $item->quantity * $price,
                 ]);
 
-                // Reduce stock (Observer also handles this)
-                $item->product->decrement('stock', $item->quantity);
+                // Reduce stock for products
+                if (!$isMenu) {
+                    $item->product->decrement('stock', $item->quantity);
+                }
             }
 
             // Clear cart
