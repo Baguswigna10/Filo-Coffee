@@ -85,26 +85,34 @@ class TableReservation extends Model
     /**
      * Check if a specific table is already booked for the given date and time
      */
-    public static function isTableBooked(string $date, string $time, string $tableNumber): bool
+    public static function isTableBooked(string $date, string $time, string $tableNumber, ?int $excludeId = null): bool
     {
-        return self::where('reservation_date', $date)
+        $query = self::where('reservation_date', $date)
             ->where('reservation_time', $time)
             ->where('table_number', $tableNumber)
-            ->whereIn('status', ['Pending', 'Confirmed'])
-            ->exists();
+            ->whereIn('status', ['Pending', 'Confirmed']);
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        return $query->exists();
     }
 
     /**
      * Check if time slot is available for the given date and area
      */
-    public static function isSlotAvailable(string $date, string $time, string $area, int $capacity = 10): bool
+    public static function isSlotAvailable(string $date, string $time, string $area, int $capacity = 10, ?int $excludeId = null): bool
     {
-        $count = self::where('reservation_date', $date)
+        $query = self::where('reservation_date', $date)
             ->where('reservation_time', $time)
             ->where('area', $area)
-            ->whereIn('status', ['Pending', 'Confirmed'])
-            ->count();
+            ->whereIn('status', ['Pending', 'Confirmed']);
 
-        return $count < $capacity;
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        return $query->count() < $capacity;
     }
 }

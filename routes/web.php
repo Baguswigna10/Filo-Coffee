@@ -61,6 +61,9 @@ Route::get('/news/{slug}',  [NewsController::class, 'show'])->name('news.show');
 // PlayStation Info (public view)
 Route::get('/playstation', [PSReservationController::class, 'index'])->name('playstation.index');
 
+// Table Reservation (public view)
+Route::get('/reservation', [ReservationController::class, 'index'])->name('reservation.index');
+
 // ============================================================
 // MIDTRANS ROUTES
 // ============================================================
@@ -92,13 +95,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/orders/{order}/proof', [OrderController::class, 'uploadPaymentProof'])->name('orders.proof');
 
     // Table Reservation
-    Route::get('/reservation',           [ReservationController::class, 'index'])->name('reservation.index');
     Route::post('/reservation',          [ReservationController::class, 'store'])->name('reservation.store');
     Route::patch('/reservation/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservation.cancel');
+    Route::patch('/reservation/{reservation}/reschedule', [ReservationController::class, 'reschedule'])->name('reservation.reschedule');
 
     // PlayStation Booking
     Route::post('/playstation',          [PSReservationController::class, 'store'])->name('playstation.store');
     Route::patch('/playstation/{psReservation}/cancel', [PSReservationController::class, 'cancel'])->name('playstation.cancel');
+    Route::patch('/playstation/{psReservation}/reschedule', [PSReservationController::class, 'reschedule'])->name('playstation.reschedule');
 });
 
 // ============================================================

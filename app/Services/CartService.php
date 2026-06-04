@@ -2,93 +2,158 @@
 
 namespace App\Services;
 
-use App\Models\Cart;
-use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
+use App\Models\TableReservation;
+use App\Models\PsReservation;
+use Carbon\Carbon;
 
-class CartService
+class ReservationService
 {
-    public function getCart(): \Illuminate\Database\Eloquent\Collection
+    // Operating hours
+    const OPEN_HOUR = '08:00';
+    const CLOSE_HOUR = '22:00';
+    const TABLE_CAPACITY_PER_SLOT = 5; // max 5 simultaneous bookings per area slot
+
+    public function createTableReservation(array $data): TableReservation
     {
-        return Cart::with(['product', 'menu'])
-            ->where('user_id', Auth::id())
-            ->get();
+        $this->validateTableSlot($data);
+
+        return TableReservation::create([
+            'reservation_code' => TableReservation::generateCode(),
+            'user_id'          => auth()->id(),
+            'name'             => $data['name'],
+            'phone'            => $data['phone'],
+            'email'            => $data['email'],
+            'reservation_date' => $data['reservation_date'],
+            'reservation_time' => $data['reservation_time'],
+            'guest_count'      => $data['guest_count'],
+            'area'             => $data['area'],
+            'table_number'     => $data['table_number'],
+            'status'           => 'Pending',
+            'special_request'  => $data['special_request'] ?? null,
+        ]);
     }
 
-    public function addToCart(?int $productId, int $quantity = 1, ?int $menuId = null): array
+    public function validateTableSlot(array $data, ?int $excludeId = null): void
     {
-        if ($productId) {
-            $item = \App\Models\Product::active()->findOrFail($productId);
-            $column = 'product_id';
-            $id = $productId;
-            
-            if ($item->stock < $quantity) {
-                return ['success' => false, 'message' => 'Stok tidak mencukupi.'];
-            }
-        } else {
-            $item = \App\Models\Menu::available()->findOrFail($menuId);
-            $column = 'menu_id';
-            $id = $menuId;
+        $date = Carbon::parse($data['reservation_date']);
+
+        if ($date->isPast() && !$date->isToday()) {
+            throw new \Exception('Tidak bisa booking tanggal yang telah lewat.');
         }
 
-        $cartItem = Cart::where('user_id', Auth::id())
-            ->where($column, $id)
-            ->first();
-
-        if ($cartItem) {
-            $newQty = $cartItem->quantity + $quantity;
-            if ($productId && $item->stock < $newQty) {
-                return ['success' => false, 'message' => 'Stok tidak mencukupi.'];
-            }
-            $cartItem->update(['quantity' => $newQty]);
-        } else {
-            Cart::create([
-                'user_id' => Auth::id(),
-                $column   => $id,
-                'quantity' => $quantity,
-            ]);
+        $time = $data['reservation_time'];
+        if ($time < self::OPEN_HOUR || $time >= self::CLOSE_HOUR) {
+            throw new \Exception('Jam operasional kami: ' . self::OPEN_HOUR . ' - ' . self::CLOSE_HOUR . '.');
         }
 
-        return ['success' => true, 'message' => ($productId ? 'Produk' : 'Menu') . ' ditambahkan ke keranjang!'];
-    }
+        $area = $data['area'];
+        $tableNumber = $data['table_number'] ?? null;
+        $tablesList = TableReservation::getTablesList();
 
-    public function updateQuantity(int $cartId, int $quantity): array
-    {
-        $cartItem = Cart::where('id', $cartId)->where('user_id', Auth::id())->firstOrFail();
-
-        if ($quantity <= 0) {
-            $cartItem->delete();
-            return ['success' => true, 'message' => 'Item dihapus dari keranjang.'];
+        if (!$tableNumber || !isset($tablesList[$area]) || !in_array($tableNumber, $tablesList[$area])) {
+            throw new \Exception('Nomor meja atau ruangan tidak valid untuk area yang dipilih.');
         }
 
-        if ($cartItem->product_id && $cartItem->product->stock < $quantity) {
-            return ['success' => false, 'message' => 'Stok tidak mencukupi.'];
+        if (TableReservation::isTableBooked($data['reservation_date'], $time, $tableNumber, $excludeId)) {
+            $formattedDate = $date->translatedFormat('d F Y');
+            throw new \Exception("Tempat sudah full/sudah dibooking! Meja atau ruangan \"{$tableNumber}\" sudah dipesan untuk tanggal {$formattedDate} jam {$time} WIB. Silahkan pilih meja/ruangan atau jam lain.");
         }
 
-        $cartItem->update(['quantity' => $quantity]);
-        return ['success' => true, 'message' => 'Keranjang diperbarui.'];
+        if (!TableReservation::isSlotAvailable($data['reservation_date'], $time, $data['area'], self::TABLE_CAPACITY_PER_SLOT, $excludeId)) {
+            throw new \Exception('Slot waktu dan area ini secara keseluruhan sudah penuh. Silahkan pilih waktu atau area lain.');
+        }
     }
 
-    public function removeItem(int $cartId): void
+    public function updateTableReservation(TableReservation $reservation, array $data): TableReservation
     {
-        Cart::where('id', $cartId)->where('user_id', Auth::id())->delete();
+        $this->validateTableSlot($data, $reservation->id);
+
+        $reservation->update([
+            'name'             => $data['name'],
+            'phone'            => $data['phone'],
+            'email'            => $data['email'],
+            'reservation_date' => $data['reservation_date'],
+            'reservation_time' => $data['reservation_time'],
+            'guest_count'      => $data['guest_count'],
+            'area'             => $data['area'],
+            'table_number'     => $data['table_number'],
+            'special_request'  => $data['special_request'] ?? null,
+        ]);
+
+        return $reservation;
     }
 
-    public function clearCart(): void
+    public function createPsReservation(array $data): PsReservation
     {
-        Cart::where('user_id', Auth::id())->delete();
+        $startTime = $data['start_time'];
+        $duration  = (int) $data['duration'];
+        $endTime   = Carbon::parse($data['reservation_date'] . ' ' . $startTime)
+                        ->addHours($duration)
+                        ->format('H:i');
+
+        $this->validatePsSlot($data, $endTime);
+
+        $pricePerHour = PsReservation::getPricePerHour($data['console_type']);
+        $totalPrice   = $pricePerHour * $duration;
+
+        return PsReservation::create([
+            'reservation_code' => PsReservation::generateCode(),
+            'user_id'          => auth()->id(),
+            'name'             => $data['name'],
+            'phone'            => $data['phone'],
+            'reservation_date' => $data['reservation_date'],
+            'start_time'       => $startTime,
+            'duration'         => $duration,
+            'end_time'         => $endTime,
+            'console_type'     => $data['console_type'],
+            'total_price'      => $totalPrice,
+            'status'           => 'Pending',
+            'notes'            => $data['notes'] ?? null,
+        ]);
     }
 
-    public function getTotal(): float
+    public function validatePsSlot(array $data, string $endTime, ?int $excludeId = null): void
     {
-        return $this->getCart()->sum(function($item) {
-            $price = $item->product_id ? $item->product->price : $item->menu->price;
-            return $item->quantity * $price;
-        });
+        $date = Carbon::parse($data['reservation_date']);
+
+        if ($date->isPast() && !$date->isToday()) {
+            throw new \Exception('Tidak bisa booking tanggal yang telah lewat.');
+        }
+
+        if ($data['start_time'] < self::OPEN_HOUR || $endTime > self::CLOSE_HOUR) {
+            throw new \Exception('Jam operasional kami: ' . self::OPEN_HOUR . ' - ' . self::CLOSE_HOUR . '.');
+        }
+
+        if (PsReservation::hasConflict($data['reservation_date'], $data['start_time'], $endTime, $data['console_type'], $excludeId)) {
+            throw new \Exception('Slot waktu ' . $data['console_type'] . ' ini sudah dipesan. Silahkan pilih waktu lain.');
+        }
     }
 
-    public function getCount(): int
+    public function updatePsReservation(PsReservation $psReservation, array $data): PsReservation
     {
-        return Cart::where('user_id', Auth::id())->sum('quantity');
+        $startTime = $data['start_time'];
+        $duration  = (int) $data['duration'];
+        $endTime   = Carbon::parse($data['reservation_date'] . ' ' . $startTime)
+                        ->addHours($duration)
+                        ->format('H:i');
+
+        $this->validatePsSlot($data, $endTime, $psReservation->id);
+
+        $pricePerHour = PsReservation::getPricePerHour($data['console_type']);
+        $totalPrice   = $pricePerHour * $duration;
+
+        $psReservation->update([
+            'name'             => $data['name'],
+            'phone'            => $data['phone'],
+            'reservation_date' => $data['reservation_date'],
+            'start_time'       => $startTime,
+            'duration'         => $duration,
+            'end_time'         => $endTime,
+            'console_type'     => $data['console_type'],
+            'total_price'      => $totalPrice,
+            'notes'            => $data['notes'] ?? null,
+        ]);
+
+        return $psReservation;
     }
 }

@@ -63,14 +63,32 @@ class MidtransController extends Controller
             abort(403);
         }
 
+        // First sync payment status to see if it is already paid on Midtrans
+        try {
+            $this->midtransService->syncPaymentStatus($order);
+        } catch (\Exception $e) {
+            Log::warning('Midtrans sync status on pay error: ' . $e->getMessage());
+        }
+
+        // If status has updated to Paid, prevent token creation and trigger frontend redirect
+        if ($order->fresh()->status === 'Paid') {
+            return response()->json([
+                'error' => 'Pesanan ini sudah berhasil dibayar! Halaman akan dimuat ulang.',
+                'redirect' => true
+            ], 422);
+        }
+
         if ($order->status !== 'Pending' || $order->payment_method !== 'Midtrans') {
             return response()->json(['error' => 'Order tidak valid untuk pembayaran Midtrans.'], 422);
         }
 
         try {
-            // Re-generate token if expired or missing
-            $snapToken = $this->midtransService->generateSnapToken($order);
-            $order->update(['midtrans_token' => $snapToken]);
+            // Reuse existing token if present, otherwise generate a new one
+            $snapToken = $order->midtrans_token;
+            if (!$snapToken) {
+                $snapToken = $this->midtransService->generateSnapToken($order);
+                $order->update(['midtrans_token' => $snapToken]);
+            }
 
             return response()->json([
                 'snap_token' => $snapToken,

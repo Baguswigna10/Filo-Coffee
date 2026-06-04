@@ -33,7 +33,7 @@ class ReservationService
         ]);
     }
 
-    public function validateTableSlot(array $data): void
+    public function validateTableSlot(array $data, ?int $excludeId = null): void
     {
         $date = Carbon::parse($data['reservation_date']);
 
@@ -54,14 +54,33 @@ class ReservationService
             throw new \Exception('Nomor meja atau ruangan tidak valid untuk area yang dipilih.');
         }
 
-        if (TableReservation::isTableBooked($data['reservation_date'], $time, $tableNumber)) {
+        if (TableReservation::isTableBooked($data['reservation_date'], $time, $tableNumber, $excludeId)) {
             $formattedDate = $date->translatedFormat('d F Y');
             throw new \Exception("Tempat sudah full/sudah dibooking! Meja atau ruangan \"{$tableNumber}\" sudah dipesan untuk tanggal {$formattedDate} jam {$time} WIB. Silahkan pilih meja/ruangan atau jam lain.");
         }
 
-        if (!TableReservation::isSlotAvailable($data['reservation_date'], $time, $data['area'], self::TABLE_CAPACITY_PER_SLOT)) {
+        if (!TableReservation::isSlotAvailable($data['reservation_date'], $time, $data['area'], self::TABLE_CAPACITY_PER_SLOT, $excludeId)) {
             throw new \Exception('Slot waktu dan area ini secara keseluruhan sudah penuh. Silahkan pilih waktu atau area lain.');
         }
+    }
+
+    public function updateTableReservation(TableReservation $reservation, array $data): TableReservation
+    {
+        $this->validateTableSlot($data, $reservation->id);
+
+        $reservation->update([
+            'name'             => $data['name'],
+            'phone'            => $data['phone'],
+            'email'            => $data['email'],
+            'reservation_date' => $data['reservation_date'],
+            'reservation_time' => $data['reservation_time'],
+            'guest_count'      => $data['guest_count'],
+            'area'             => $data['area'],
+            'table_number'     => $data['table_number'],
+            'special_request'  => $data['special_request'] ?? null,
+        ]);
+
+        return $reservation;
     }
 
     public function createPsReservation(array $data): PsReservation
@@ -93,7 +112,7 @@ class ReservationService
         ]);
     }
 
-    public function validatePsSlot(array $data, string $endTime): void
+    public function validatePsSlot(array $data, string $endTime, ?int $excludeId = null): void
     {
         $date = Carbon::parse($data['reservation_date']);
 
@@ -105,8 +124,36 @@ class ReservationService
             throw new \Exception('Jam operasional kami: ' . self::OPEN_HOUR . ' - ' . self::CLOSE_HOUR . '.');
         }
 
-        if (PsReservation::hasConflict($data['reservation_date'], $data['start_time'], $endTime, $data['console_type'])) {
+        if (PsReservation::hasConflict($data['reservation_date'], $data['start_time'], $endTime, $data['console_type'], $excludeId)) {
             throw new \Exception('Slot waktu ' . $data['console_type'] . ' ini sudah dipesan. Silahkan pilih waktu lain.');
         }
+    }
+
+    public function updatePsReservation(PsReservation $psReservation, array $data): PsReservation
+    {
+        $startTime = $data['start_time'];
+        $duration  = (int) $data['duration'];
+        $endTime   = Carbon::parse($data['reservation_date'] . ' ' . $startTime)
+                        ->addHours($duration)
+                        ->format('H:i');
+
+        $this->validatePsSlot($data, $endTime, $psReservation->id);
+
+        $pricePerHour = PsReservation::getPricePerHour($data['console_type']);
+        $totalPrice   = $pricePerHour * $duration;
+
+        $psReservation->update([
+            'name'             => $data['name'],
+            'phone'            => $data['phone'],
+            'reservation_date' => $data['reservation_date'],
+            'start_time'       => $startTime,
+            'duration'         => $duration,
+            'end_time'         => $endTime,
+            'console_type'     => $data['console_type'],
+            'total_price'      => $totalPrice,
+            'notes'            => $data['notes'] ?? null,
+        ]);
+
+        return $psReservation;
     }
 }

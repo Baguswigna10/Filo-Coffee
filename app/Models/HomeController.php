@@ -1,34 +1,41 @@
 <?php
 
-namespace App\Models;
+namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Menu;
+use App\Models\Product;
+use Illuminate\Http\Request;
 
-class Cart extends Model
+class HomeController extends Controller
 {
-    use HasFactory;
-
-    protected $fillable = ['user_id', 'product_id', 'menu_id', 'quantity'];
-
-    public function user()
+    public function index()
     {
-        return $this->belongsTo(User::class);
+        $featuredMenus    = Menu::available()->featured()->orderBy('sort_order')->take(6)->get();
+        $featuredProducts = Product::featured()->inStock()->take(4)->get();
+
+        return view('pages.home', compact('featuredMenus', 'featuredProducts'));
     }
 
-    public function product()
+    public function about()
     {
-        return $this->belongsTo(Product::class);
+        return view('pages.about');
     }
 
-    public function menu()
+    public function contact()
     {
-        return $this->belongsTo(Menu::class);
+        return view('pages.contact');
     }
 
-    public function getSubtotalAttribute(): float
+    public function sendContact(Request $request)
     {
-        $price = $this->product_id ? $this->product->price : $this->menu->price;
-        return $this->quantity * $price;
+        $request->validate([
+            'name'    => 'required|string|max:100',
+            'email'   => 'required|email',
+            'subject' => 'required|string|max:200',
+            'message' => 'required|string|max:2000',
+        ]);
+
+        // In production: send email via Mail::to(...)->send(...)
+        return back()->with('success', 'Pesan Anda telah terkirim! Kami akan segera membalas.');
     }
 }
