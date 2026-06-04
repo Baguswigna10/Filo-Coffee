@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +13,7 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('pages.auth.login');
+        return view('auth.login');
     }
 
     public function login(Request $request)
@@ -25,7 +26,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('home'));
+            // Redirect to first visible page if home is hidden
+            $homeVisible = Page::where('route_name', 'home')->where('is_visible', true)->exists();
+            $target = $homeVisible ? route('home') : (Page::where('is_visible', true)->first()->route_name ?? 'home');
+
+            return redirect()->intended($homeVisible ? route('home') : route($target));
         }
 
         throw ValidationException::withMessages([
@@ -35,7 +40,7 @@ class LoginController extends Controller
 
     public function showRegisterForm()
     {
-        return view('pages.auth.register');
+        return view('auth.register');
     }
 
     public function register(Request $request)
@@ -55,7 +60,9 @@ class LoginController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home');
+        $homeVisible = Page::where('route_name', 'home')->where('is_visible', true)->exists();
+        $target = $homeVisible ? 'home' : (Page::where('is_visible', true)->first()->route_name ?? 'home');
+        return redirect()->route($target);
     }
 
     public function logout(Request $request)
@@ -65,6 +72,8 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home');
+        $homeVisible = Page::where('route_name', 'home')->where('is_visible', true)->exists();
+        $target = $homeVisible ? 'home' : (Page::where('is_visible', true)->first()->route_name ?? 'home');
+        return redirect()->route($target);
     }
 }
