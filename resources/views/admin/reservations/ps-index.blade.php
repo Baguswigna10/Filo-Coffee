@@ -30,7 +30,7 @@
 <div class="admin-card animate-fade-in-up" style="animation-delay: 0.1s">
     <table class="w-full admin-table">
         <thead>
-            <tr class="border-b border-white/[0.06]">
+            <tr class="border-b border-olive-900/5">
                 <th class="text-left">Kode</th>
                 <th class="text-left">Nama</th>
                 <th class="text-left">Konsol</th>
@@ -41,39 +41,39 @@
                 <th class="text-right">Aksi</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-white/[0.03]">
+        <tbody class="divide-y divide-olive-900/5">
             @forelse($reservations as $res)
             <tr x-data="{ open: false }">
-                <td class="text-mocca font-medium">{{ $res->reservation_code }}</td>
+                <td class="text-mocca-dark font-bold">{{ $res->reservation_code }}</td>
                 <td>
                     <div>
-                        <div class="text-cream text-sm font-medium">{{ $res->name }}</div>
-                        <div class="text-cream/25 text-xs">{{ $res->phone }}</div>
+                        <div class="text-olive-900 text-sm font-semibold">{{ $res->name }}</div>
+                        <div class="text-olive-900/35 text-xs font-semibold">{{ $res->phone }}</div>
                     </div>
                 </td>
                 <td>
-                    <span class="badge {{ $res->console_type == 'PS5' ? 'bg-indigo-500/12 text-indigo-400 border border-indigo-500/20' : 'bg-blue-500/12 text-blue-400 border border-blue-500/20' }}">
+                    <span class="badge {{ $res->console_type == 'PS5' ? 'bg-indigo-100 text-indigo-850' : 'bg-blue-100 text-blue-850' }}">
                         {{ $res->console_type }}
                     </span>
                 </td>
-                <td class="text-cream/50">{{ $res->reservation_date->format('d M Y') }}</td>
+                <td class="text-olive-900/50 font-semibold text-sm">{{ $res->reservation_date->format('d M Y') }}</td>
                 <td>
-                    <div class="text-cream/50 text-sm">{{ substr($res->start_time, 0, 5) }} – {{ substr($res->end_time, 0, 5) }}</div>
-                    <div class="text-cream/20 text-xs">{{ $res->duration }} jam</div>
+                    <div class="text-olive-900/50 text-sm font-semibold">{{ substr($res->start_time, 0, 5) }} – {{ substr($res->end_time, 0, 5) }}</div>
+                    <div class="text-olive-900/30 text-xs font-semibold">{{ $res->duration }} jam</div>
                 </td>
-                <td class="text-cream font-medium">Rp {{ number_format($res->total_price, 0, ',', '.') }}</td>
+                <td class="text-olive-900 font-bold">Rp {{ number_format($res->total_price, 0, ',', '.') }}</td>
                 <td><span class="badge badge-{{ $res->status }}">{{ $res->status }}</span></td>
                 <td class="text-right relative">
-                    <button @click="open = !open" class="inline-flex items-center gap-1.5 text-cream/40 hover:text-mocca transition-colors duration-200 text-xs font-medium">
+                    <button @click="open = !open" class="inline-flex items-center gap-1.5 text-olive-900/45 hover:text-olive-900 transition-colors duration-200 text-xs font-semibold">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         Update
                     </button>
                     <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 -translate-y-1" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-72 dropdown-panel p-5 z-20">
                         <div class="flex items-center gap-2 mb-4">
                             <div class="w-6 h-6 bg-mocca/10 rounded-md flex items-center justify-center ring-1 ring-mocca/20">
-                                <svg class="w-3 h-3 text-mocca" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <svg class="w-3 h-3 text-mocca-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             </div>
-                            <span class="text-cream text-xs font-semibold">Update Status</span>
+                            <span class="text-olive-900 text-xs font-semibold">Update Status</span>
                         </div>
                         <form action="{{ route('admin.reservations.ps.status', $res) }}" method="POST" class="space-y-3">
                             @csrf @method('PATCH')
@@ -95,10 +95,10 @@
             <tr>
                 <td colspan="8" class="!py-16 text-center">
                     <div class="flex flex-col items-center gap-3">
-                        <div class="w-12 h-12 bg-white/[0.03] rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-cream/15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+                        <div class="w-12 h-12 bg-olive-50 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-olive-900/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
                         </div>
-                        <p class="text-cream/25 text-sm">Belum ada booking PS.</p>
+                        <p class="text-olive-900/30 text-sm">Belum ada booking PS.</p>
                     </div>
                 </td>
             </tr>
