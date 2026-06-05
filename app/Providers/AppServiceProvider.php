@@ -15,8 +15,17 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Share visible pages to all views
+        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+            $visiblePages = [];
+            if (\Illuminate\Support\Facades\Schema::hasTable('pages')) {
+                $visiblePages = \App\Models\Page::where('is_visible', true)->pluck('route_name')->toArray();
+            }
+            $view->with('visiblePages', $visiblePages);
+        });
+
         // Share cart count to all views
-        View::composer('*', function ($view) {
+        \Illuminate\Support\Facades\View::composer('*', function ($view) {
             if (auth()->check()) {
                 $cartService = app(CartService::class);
                 $view->with('globalCartCount', $cartService->getCount());
