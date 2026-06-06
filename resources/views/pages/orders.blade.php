@@ -54,12 +54,12 @@
             </div>
             <h3 class="font-display text-3xl text-olive-900 font-bold mb-4">Belum Ada Pesanan</h3>
             <p class="text-olive-800/60 text-lg leading-relaxed mb-12">Anda belum pernah melakukan pemesanan. Ingin mulai menjelajahi koleksi menu atau biji kopi terbaik kami?</p>
-            <div class="flex flex-wrap justify-center items-center gap-6">
+            <div class="flex flex-wrap items-center gap-4 mb-14">
                 <a href="{{ route('menu') }}" class="bg-olive-800 text-beige-50 hover:bg-olive-900 px-10 py-4 rounded-2xl font-bold transition-all duration-300 shadow-xl shadow-olive-900/10 group flex items-center gap-2">
                     <span>Pesan Menu</span>
                     <svg class="w-5 h-5 transition-transform duration-500 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
-                <a href="{{ route('shop') }}" class="border-2 border-olive-800 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-10 py-3.5 rounded-2xl font-bold transition-all duration-300 group flex items-center gap-2">
+                <a href="{{ route('shop') }}" class="border border-olive-800/30 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-8 py-3 rounded-2xl font-bold transition-all duration-300 inline-flex items-center gap-2">
                     <span>Beli Kopi</span>
                     <svg class="w-5 h-5 transition-transform duration-500 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
