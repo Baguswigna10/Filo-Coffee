@@ -15,12 +15,10 @@ class MemberController extends Controller
     {
         $request->validate([
             'name'          => 'required|string|max:255',
-            'email'         => 'required|email|unique:users,email,' . (auth()->id() ?: 'NULL'),
+            'email'         => 'required|email|max:255',
             'phone'         => 'required|string|max:20',
             'birth_date'    => 'required|date',
             'address'       => 'required|string',
-            'photo'         => 'nullable|image|max:2048',
-            'terms'         => 'accepted',
         ]);
 
         // Logic for saving member data would go here

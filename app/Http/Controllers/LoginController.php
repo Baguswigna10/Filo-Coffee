@@ -28,7 +28,7 @@ class LoginController extends Controller
 
             // Redirect to first visible page if home is hidden
             $homeVisible = Page::where('route_name', 'home')->where('is_visible', true)->exists();
-            $target = $homeVisible ? route('home') : (Page::where('is_visible', true)->first()->route_name ?? 'home');
+            $target = $homeVisible ? route('home') : (Page::where('is_visible', true)->first()?->route_name ?? 'home');
 
             return redirect()->intended($homeVisible ? route('home') : route($target));
         }
@@ -61,7 +61,7 @@ class LoginController extends Controller
         Auth::login($user);
 
         $homeVisible = Page::where('route_name', 'home')->where('is_visible', true)->exists();
-        $target = $homeVisible ? 'home' : (Page::where('is_visible', true)->first()->route_name ?? 'home');
+        $target = $homeVisible ? 'home' : (Page::where('is_visible', true)->first()?->route_name ?? 'home');
         return redirect()->route($target);
     }
 
@@ -73,7 +73,7 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         $homeVisible = Page::where('route_name', 'home')->where('is_visible', true)->exists();
-        $target = $homeVisible ? 'home' : (Page::where('is_visible', true)->first()->route_name ?? 'home');
+        $target = $homeVisible ? 'home' : (Page::where('is_visible', true)->first()?->route_name ?? 'home');
         return redirect()->route($target);
     }
 }
