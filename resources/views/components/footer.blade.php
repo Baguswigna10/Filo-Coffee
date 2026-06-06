@@ -40,9 +40,9 @@
                 <ul class="space-y-3.5">
                     @foreach([
                         ['route' => 'home',     'label' => 'Home'],
-                        ['route' => 'about',    'label' => 'AboutFilo'],
+                        ['route' => 'about',    'label' => 'About Filo'],
                         ['route' => 'menu',     'label' => 'Menu'],
-                        ['route' => 'shop',     'label' => 'ShopBeans'],
+                        ['route' => 'shop',     'label' => 'Shop Beans'],
                         ['route' => 'news',     'label' => 'News'],
                         ['route' => 'member',   'label' => 'Member'],
                     ] as $link)
