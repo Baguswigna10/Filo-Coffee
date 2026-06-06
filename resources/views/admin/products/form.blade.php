@@ -10,111 +10,142 @@
         @csrf
         @if($product->exists) @method('PUT') @endif
 
-        <div class="admin-card p-6 space-y-5">
-            {{-- Section header --}}
+        {{-- Detail Produk --}}
+        <div class="admin-card p-6 space-y-5 border border-olive-900/5 shadow-sm">
             <div class="flex items-center gap-3 pb-4 border-b border-olive-900/5">
-                <div class="w-8 h-8 bg-mocca/10 rounded-lg flex items-center justify-center ring-1 ring-mocca/20">
-                    <svg class="w-4 h-4 text-mocca-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <div class="w-9 h-9 bg-mocca/10 rounded-xl flex items-center justify-center ring-1 ring-mocca/20">
+                    <span class="material-symbols-outlined text-mocca-dark text-lg">grain</span>
                 </div>
-                <span class="text-olive-900/60 text-sm font-medium">Detail Produk</span>
+                <div>
+                    <h3 class="text-olive-900 text-sm font-bold">Detail Informasi Produk</h3>
+                    <p class="text-[10px] text-olive-900/40 font-semibold">Nama, asal, roast level, dan notes aroma biji kopi</p>
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-2">
-                    <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Nama Produk *</label>
-                    <input type="text" name="name" value="{{ old('name', $product->name) }}" required class="input-field">
-                    @error('name')<span class="text-red-650 text-xs mt-1 block">{{ $message }}</span>@enderror
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="col-span-1 md:col-span-2 space-y-2">
+                    <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Nama Produk *</label>
+                    <input type="text" name="name" value="{{ old('name', $product->name) }}" required class="input-field" placeholder="Masukkan nama produk biji kopi...">
+                    @error('name')<span class="text-red-650 text-xs mt-1 block font-medium">{{ $message }}</span>@enderror
                 </div>
-                <div>
-                    <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Asal Daerah *</label>
-                    <input type="text" name="origin" value="{{ old('origin', $product->origin) }}" required class="input-field" placeholder="Aceh Gayo, Flores, dll.">
-                    @error('origin')<span class="text-red-650 text-xs mt-1 block">{{ $message }}</span>@enderror
+                <div class="space-y-2">
+                    <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Asal Daerah *</label>
+                    <input type="text" name="origin" value="{{ old('origin', $product->origin) }}" required class="input-field" placeholder="Aceh Gayo, Flores, Toraja, dll.">
+                    @error('origin')<span class="text-red-650 text-xs mt-1 block font-medium">{{ $message }}</span>@enderror
                 </div>
-                <div>
-                    <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Roast Level *</label>
+                <div class="space-y-2">
+                    <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Roast Level *</label>
                     <select name="roast_level" required class="input-field">
                         @foreach(['Light', 'Medium', 'Medium-Dark', 'Dark'] as $r)
                         <option value="{{ $r }}" {{ old('roast_level', $product->roast_level) == $r ? 'selected' : '' }}>{{ $r }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-span-2">
-                    <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Flavor Notes *</label>
-                    <input type="text" name="flavor_notes" value="{{ old('flavor_notes', $product->flavor_notes) }}" required class="input-field" placeholder="Caramel, Chocolate, Floral...">
-                    @error('flavor_notes')<span class="text-red-650 text-xs mt-1 block">{{ $message }}</span>@enderror
+                <div class="col-span-1 md:col-span-2 space-y-2">
+                    <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Flavor Notes *</label>
+                    <input type="text" name="flavor_notes" value="{{ old('flavor_notes', $product->flavor_notes) }}" required class="input-field" placeholder="Contoh: Caramel, Chocolate, Fruity, Floral...">
+                    @error('flavor_notes')<span class="text-red-650 text-xs mt-1 block font-medium">{{ $message }}</span>@enderror
                 </div>
             </div>
         </div>
 
         {{-- Pricing & Stock --}}
-        <div class="admin-card p-6 space-y-5">
+        <div class="admin-card p-6 space-y-5 border border-olive-900/5 shadow-sm">
             <div class="flex items-center gap-3 pb-4 border-b border-olive-900/5">
-                <div class="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center ring-1 ring-emerald-500/20">
-                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="w-9 h-9 bg-emerald-500/10 rounded-xl flex items-center justify-center ring-1 ring-emerald-500/20">
+                    <span class="material-symbols-outlined text-emerald-700 text-lg">payments</span>
                 </div>
-                <span class="text-olive-900/60 text-sm font-medium">Harga & Stok</span>
+                <div>
+                    <h3 class="text-olive-900 text-sm font-bold">Harga & Stok</h3>
+                    <p class="text-[10px] text-olive-900/40 font-semibold">Tentukan harga jual, berat kemasan, dan jumlah stok</p>
+                </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Harga (Rp) *</label>
-                    <input type="number" name="price" value="{{ old('price', $product->price) }}" required min="0" class="input-field">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="space-y-2">
+                    <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Harga (Rp) *</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-olive-900/40 text-sm font-semibold">Rp</span>
+                        <input type="number" name="price" value="{{ old('price', $product->price) }}" required min="0" class="input-field !pl-10" placeholder="0">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Berat (gram) *</label>
-                    <input type="number" name="weight_grams" value="{{ old('weight_grams', $product->weight_grams ?? 250) }}" required min="0" class="input-field">
+                <div class="space-y-2">
+                    <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Berat (gram) *</label>
+                    <div class="relative">
+                        <input type="number" name="weight_grams" value="{{ old('weight_grams', $product->weight_grams ?? 250) }}" required min="0" class="input-field !pr-12" placeholder="250">
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-olive-900/40 text-xs font-bold">GRAM</span>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Stok *</label>
-                    <input type="number" name="stock" value="{{ old('stock', $product->stock ?? 0) }}" required min="0" class="input-field">
+                <div class="space-y-2">
+                    <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Jumlah Stok *</label>
+                    <input type="number" name="stock" value="{{ old('stock', $product->stock ?? 0) }}" required min="0" class="input-field" placeholder="0">
                 </div>
             </div>
         </div>
 
         {{-- Description & Image --}}
-        <div class="admin-card p-6 space-y-5">
+        <div class="admin-card p-6 space-y-5 border border-olive-900/5 shadow-sm">
             <div class="flex items-center gap-3 pb-4 border-b border-olive-900/5">
-                <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center ring-1 ring-blue-500/20">
-                    <svg class="w-4 h-4 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <div class="w-9 h-9 bg-blue-500/10 rounded-xl flex items-center justify-center ring-1 ring-blue-500/20">
+                    <span class="material-symbols-outlined text-blue-700 text-lg">description</span>
                 </div>
-                <span class="text-olive-900/60 text-sm font-medium">Deskripsi & Media</span>
-            </div>
-
-            <div>
-                <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Deskripsi</label>
-                <textarea name="description" rows="3" class="input-field resize-none">{{ old('description', $product->description) }}</textarea>
-            </div>
-
-            <div>
-                <label class="block text-[10px] text-olive-900/40 mb-2 font-bold uppercase tracking-wider">Foto Produk</label>
-                @if($product->image)
-                <div class="mb-3 relative inline-block group">
-                    <img src="{{ $product->image_url }}" class="w-28 h-28 object-cover rounded-xl ring-1 ring-olive-900/5 group-hover:ring-mocca/30 transition-all duration-300">
+                <div>
+                    <h3 class="text-olive-900 text-sm font-bold">Deskripsi & Media</h3>
+                    <p class="text-[10px] text-olive-900/40 font-semibold">Penjelasan lengkap mengenai produk dan foto representatif</p>
                 </div>
-                @endif
-                <input type="file" name="image" accept="image/*" class="input-field text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-mocca/10 file:text-mocca-dark hover:file:bg-mocca/20 file:transition-colors file:cursor-pointer">
             </div>
 
-            <div class="flex gap-6 pt-2">
-                <label class="flex items-center gap-2.5 cursor-pointer group">
+            <div class="space-y-2">
+                <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Deskripsi</label>
+                <textarea name="description" rows="4" class="input-field resize-none" placeholder="Tulis deskripsi detail produk biji kopi seperti karakter rasa, elevasi tanam, proses pasca-panen... (opsional)">{{ old('description', $product->description) }}</textarea>
+            </div>
+
+            <div class="space-y-3">
+                <label class="block text-[10px] text-olive-900/40 font-bold uppercase tracking-wider">Foto Produk</label>
+                <div class="flex items-start gap-4">
+                    @if($product->image)
+                    <div class="relative inline-block flex-shrink-0 group">
+                        <img src="{{ $product->image_url }}" class="w-24 h-24 object-cover rounded-2xl ring-1 ring-olive-900/5 group-hover:ring-mocca/30 transition-all duration-300 shadow-sm">
+                        <div class="absolute inset-0 bg-olive-950/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="text-white text-[9px] font-bold uppercase tracking-wider bg-olive-900/80 px-2 py-1 rounded-lg">Saat ini</span>
+                        </div>
+                    </div>
+                    @endif
+                    <div class="flex-1">
+                        <div class="relative flex items-center justify-center border border-dashed border-olive-900/20 rounded-2xl p-4 bg-olive-50/20 hover:bg-olive-50/40 hover:border-mocca/50 transition-colors group cursor-pointer">
+                            <input type="file" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <div class="text-center">
+                                <span class="material-symbols-outlined text-olive-900/30 group-hover:text-mocca-dark transition-colors mb-1 text-2xl">add_photo_alternate</span>
+                                <p class="text-xs text-olive-900/50 font-semibold group-hover:text-olive-900 transition-colors">Pilih file foto baru</p>
+                                <p class="text-[10px] text-olive-900/30 mt-0.5">PNG, JPG, JPEG up to 2MB</p>
+                            </div>
+                        </div>
+                        @error('image')<span class="text-red-650 text-xs mt-1.5 block font-medium">{{ $message }}</span>@enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-5 pt-2">
+                <label class="flex items-center gap-3 cursor-pointer group">
                     <input type="hidden" name="is_active" value="0">
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active ?? true) ? 'checked' : '' }} class="w-4 h-4 accent-mocca text-olive-650 border-olive-900/10 rounded cursor-pointer">
-                    <span class="text-sm text-olive-900/50 group-hover:text-olive-900 transition-colors font-medium">Aktif dijual</span>
+                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active ?? true) ? 'checked' : '' }} class="w-4 h-4 text-olive-600 border-olive-900/20 rounded focus:ring-olive-500/20 focus:ring-offset-0 cursor-pointer transition-all">
+                    <span class="text-sm text-olive-900/60 group-hover:text-olive-900 transition-colors font-medium">Aktif Dijual di Toko</span>
                 </label>
-                <label class="flex items-center gap-2.5 cursor-pointer group">
+                <label class="flex items-center gap-3 cursor-pointer group">
                     <input type="hidden" name="is_featured" value="0">
-                    <input type="checkbox" name="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }} class="w-4 h-4 accent-mocca text-olive-650 border-olive-900/10 rounded cursor-pointer">
-                    <span class="text-sm text-olive-900/50 group-hover:text-olive-900 transition-colors font-medium">Featured di Home</span>
+                    <input type="checkbox" name="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }} class="w-4 h-4 text-olive-600 border-olive-900/20 rounded focus:ring-olive-500/20 focus:ring-offset-0 cursor-pointer transition-all">
+                    <span class="text-sm text-olive-900/60 group-hover:text-olive-900 transition-colors font-medium">Unggulkan di Halaman Depan</span>
                 </label>
             </div>
         </div>
 
-        <div class="flex gap-3">
-            <button type="submit" class="btn-mocca">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        {{-- Form Actions --}}
+        <div class="flex items-center gap-3">
+            <button type="submit" class="bg-olive-800 hover:bg-olive-900 text-beige-50 px-6 py-3 rounded-2xl font-bold flex items-center gap-2 transition-all hover:shadow-lg active:scale-95 text-xs shadow-sm">
+                <span class="material-symbols-outlined text-sm">save</span>
                 {{ $product->exists ? 'Simpan Perubahan' : 'Tambahkan Produk' }}
             </button>
-            <a href="{{ route('admin.products.index') }}" class="btn-outline-mocca">Batal</a>
+            <a href="{{ route('admin.products.index') }}" class="btn-outline-mocca !py-3">Batal</a>
         </div>
     </form>
 </div>

@@ -117,7 +117,7 @@
 {{-- ═══════════════════════════════════════
      SPECIALTY COFFEE MENU SECTION (THE SIP ART)
      ═══════════════════════════════════════ --}}
-<section class="relative overflow-hidden min-h-[92vh] flex items-center bg-beige-50">
+<section class="py-24 relative overflow-hidden min-h-[92vh] flex items-center bg-beige-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Section Header --}}
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 reveal">

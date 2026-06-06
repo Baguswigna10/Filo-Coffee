@@ -5,113 +5,129 @@
 
 @section('content')
 {{-- Filter --}}
-<form method="GET" class="admin-card p-4 mb-6 animate-fade-in-up">
+<form method="GET" class="admin-card p-5 mb-6 animate-fade-in-up">
     <div class="flex flex-wrap items-center gap-3">
-        <select name="status" class="input-field w-auto text-sm">
-            <option value="">Semua Status</option>
-            @foreach(['Pending', 'Confirmed', 'Cancelled'] as $s)
-            <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ $s }}</option>
-            @endforeach
-        </select>
+        <div class="relative">
+            <select name="status" class="input-field w-auto text-sm pr-10">
+                <option value="">Semua Status</option>
+                @foreach(['Pending', 'Confirmed', 'Cancelled'] as $s)
+                <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ $s }}</option>
+                @endforeach
+            </select>
+        </div>
         <input type="date" name="date" value="{{ request('date') }}" class="input-field w-auto text-sm">
+        
         <button type="submit" class="btn-mocca">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+            <span class="material-symbols-outlined text-sm">filter_alt</span>
             Filter
         </button>
     </div>
 </form>
 
 {{-- Table --}}
-<div class="admin-card animate-fade-in-up" style="animation-delay: 0.1s">
-    <table class="w-full admin-table">
-        <thead>
-            <tr class="border-b border-olive-900/5">
-                <th class="text-left">Kode</th>
-                <th class="text-left">Nama</th>
-                <th class="text-left">Tanggal & Waktu</th>
-                <th class="text-left">Area</th>
-                <th class="text-left">Tamu</th>
-                <th class="text-left">Status</th>
-                <th class="text-right">Aksi</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-olive-900/5">
-            @forelse($reservations as $res)
-            <tr x-data="{ open: false }">
-                <td class="text-mocca-dark font-bold">{{ $res->reservation_code }}</td>
-                <td>
-                    <div>
-                        <div class="text-olive-900 text-sm font-semibold">{{ $res->name }}</div>
-                        <div class="text-olive-900/35 text-xs font-semibold">{{ $res->phone }}</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="text-olive-900/60 text-sm font-semibold">{{ $res->reservation_date->format('d M Y') }}</div>
-                    <div class="text-olive-900/35 text-xs font-semibold">{{ substr($res->reservation_time, 0, 5) }}</div>
-                </td>
-                <td>
-                    <div>
-                        <span class="text-olive-850/60 text-xs font-bold bg-olive-50 px-2.5 py-1 rounded-lg">{{ $res->area }}</span>
-                        @if($res->table_number)
-                        <div class="text-mocca-dark text-[0.7rem] font-bold mt-1 ml-0.5 uppercase tracking-wide">{{ $res->table_number }}</div>
-                        @endif
-                    </div>
-                </td>
-                <td class="text-olive-900/60 font-semibold text-sm">{{ $res->guest_count }} orang</td>
-                <td><span class="badge badge-{{ $res->status }}">{{ $res->status }}</span></td>
-                <td class="text-right relative">
-                    <button @click="open = !open" class="inline-flex items-center gap-1.5 text-olive-900/45 hover:text-olive-900 transition-colors duration-200 text-xs font-semibold">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        Update
-                    </button>
-                    <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 -translate-y-1" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-72 dropdown-panel p-5 z-20">
-                        <div class="flex items-center gap-2 mb-4">
-                            <div class="w-6 h-6 bg-mocca/10 rounded-md flex items-center justify-center ring-1 ring-mocca/20">
-                                <svg class="w-3 h-3 text-mocca-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+<div class="admin-card overflow-hidden animate-fade-in-up shadow-sm border border-olive-900/5" style="animation-delay: 0.1s">
+    <div class="overflow-x-auto">
+        <table class="w-full admin-table text-left border-collapse">
+            <thead>
+                <tr class="border-b border-olive-900/5 bg-olive-50/20">
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-olive-800">Kode</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-olive-800">Nama</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-olive-800">Tanggal & Waktu</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-olive-800">Area</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-olive-800">Tamu</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-olive-800">Status</th>
+                    <th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-olive-800 text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-olive-900/5">
+                @forelse($reservations as $res)
+                <tr x-data="{ open: false }" class="hover:bg-olive-50/20 transition-colors">
+                    <td class="py-4 px-6 text-mocca-dark font-bold text-sm font-mono">{{ $res->reservation_code }}</td>
+                    <td class="py-4 px-6">
+                        <div>
+                            <div class="text-olive-900 text-sm font-semibold leading-tight mb-0.5">{{ $res->name }}</div>
+                            <div class="text-olive-900/40 text-xs font-medium">{{ $res->phone }}</div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="text-olive-900/70 text-xs font-semibold mb-0.5">{{ $res->reservation_date->format('d M Y') }}</div>
+                        <div class="text-olive-900/40 text-[10px] font-bold uppercase tracking-wider leading-none">{{ substr($res->reservation_time, 0, 5) }}</div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-olive-50 text-olive-800 border border-olive-900/5">
+                                {{ $res->area }}
+                            </span>
+                            @if($res->table_number)
+                            <div class="text-mocca-dark text-[10px] font-bold mt-1 ml-0.5 uppercase tracking-wider">Meja {{ $res->table_number }}</div>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-olive-900/70 font-bold text-xs">
+                        {{ $res->guest_count }} orang
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="badge badge-{{ $res->status }}">
+                            {{ $res->status }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6 text-right relative">
+                        <button @click="open = !open" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-olive-50 hover:bg-olive-100/80 text-olive-900/60 hover:text-olive-900 transition-all text-xs font-bold uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            Update
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 -translate-y-1" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-72 dropdown-panel p-5 z-20 text-left" style="display: none;">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="w-6 h-6 bg-mocca/10 rounded-md flex items-center justify-center ring-1 ring-mocca/20">
+                                    <span class="material-symbols-outlined text-mocca-dark text-sm">sync_alt</span>
+                                </div>
+                                <span class="text-olive-900 text-xs font-bold uppercase tracking-wider">Update Status Reservasi</span>
                             </div>
-                            <span class="text-olive-900 text-xs font-semibold">Update Status</span>
+                            <form action="{{ route('admin.reservations.tables.status', $res) }}" method="POST" class="space-y-3">
+                                @csrf @method('PATCH')
+                                <select name="status" class="input-field text-sm">
+                                    @foreach(['Pending', 'Confirmed', 'Cancelled'] as $s)
+                                    <option value="{{ $s }}" {{ $res->status == $s ? 'selected' : '' }}>{{ $s }}</option>
+                                    @endforeach
+                                </select>
+                                <textarea name="admin_notes" rows="2" class="input-field text-sm resize-none" placeholder="Tambahkan catatan admin... (opsional)">{{ $res->admin_notes }}</textarea>
+                                <button type="submit" class="btn-mocca w-full justify-center text-xs">
+                                    <span class="material-symbols-outlined text-sm">save</span>
+                                    Simpan Status
+                                </button>
+                            </form>
                         </div>
-                        <form action="{{ route('admin.reservations.tables.status', $res) }}" method="POST" class="space-y-3">
-                            @csrf @method('PATCH')
-                            <select name="status" class="input-field text-sm">
-                                @foreach(['Pending', 'Confirmed', 'Cancelled'] as $s)
-                                <option value="{{ $s }}" {{ $res->status == $s ? 'selected' : '' }}>{{ $s }}</option>
-                                @endforeach
-                            </select>
-                            <textarea name="admin_notes" rows="2" class="input-field text-sm resize-none" placeholder="Catatan admin...">{{ $res->admin_notes }}</textarea>
-                            <button type="submit" class="btn-mocca w-full justify-center text-xs">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                Simpan
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            @if($res->special_request)
-            <tr class="!border-t-0">
-                <td colspan="7" class="!pt-0 !pb-3">
-                    <div class="flex items-start gap-2 ml-4 pl-4 border-l-2 border-mocca/20">
-                        <svg class="w-3.5 h-3.5 text-mocca-dark/40 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                        <p class="text-olive-900/50 text-xs leading-relaxed font-semibold italic">{{ $res->special_request }}</p>
-                    </div>
-                </td>
-            </tr>
-            @endif
-            @empty
-            <tr>
-                <td colspan="7" class="!py-16 text-center">
-                    <div class="flex flex-col items-center gap-3">
-                        <div class="w-12 h-12 bg-olive-50 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-olive-900/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </td>
+                </tr>
+                @if($res->special_request)
+                <tr class="!border-t-0 bg-olive-50/5">
+                    <td colspan="7" class="!pt-0 !pb-4 px-6">
+                        <div class="flex items-start gap-2.5 ml-4 pl-4 border-l-2 border-mocca/30">
+                            <span class="material-symbols-outlined text-mocca-dark text-xs mt-0.5">chat_bubble</span>
+                            <p class="text-olive-900/60 text-xs leading-relaxed font-semibold italic">Permintaan khusus: "{{ $res->special_request }}"</p>
                         </div>
-                        <p class="text-olive-900/30 text-sm">Belum ada reservasi meja.</p>
-                    </div>
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+                    </td>
+                </tr>
+                @endif
+                @empty
+                <tr>
+                    <td colspan="7" class="py-16 text-center">
+                        <div class="flex flex-col items-center justify-center gap-3">
+                            <div class="w-14 h-14 bg-olive-50 rounded-2xl flex items-center justify-center text-olive-900/20 shadow-inner">
+                                <span class="material-symbols-outlined text-3xl">table_restaurant</span>
+                            </div>
+                            <p class="text-olive-900/30 font-semibold text-sm">Belum ada reservasi meja.</p>
+                            <p class="text-olive-900/20 text-xs">Coba ubah filter pencarian Anda atau tanggal reservasi.</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="mt-6 pagination-wrapper">{{ $reservations->links() }}</div>
+<div class="mt-6 pagination-wrapper">
+    {{ $reservations->links() }}
+</div>
 @endsection

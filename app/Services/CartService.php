@@ -2,158 +2,136 @@
 
 namespace App\Services;
 
-use App\Models\TableReservation;
-use App\Models\PsReservation;
-use Carbon\Carbon;
+use App\Models\Cart;
+use App\Models\Menu;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
-class ReservationService
+class CartService
 {
-    // Operating hours
-    const OPEN_HOUR = '08:00';
-    const CLOSE_HOUR = '22:00';
-    const TABLE_CAPACITY_PER_SLOT = 5; // max 5 simultaneous bookings per area slot
-
-    public function createTableReservation(array $data): TableReservation
+    /**
+     * Get all cart items for the authenticated user.
+     */
+    public function getCart(): Collection
     {
-        $this->validateTableSlot($data);
-
-        return TableReservation::create([
-            'reservation_code' => TableReservation::generateCode(),
-            'user_id'          => auth()->id(),
-            'name'             => $data['name'],
-            'phone'            => $data['phone'],
-            'email'            => $data['email'],
-            'reservation_date' => $data['reservation_date'],
-            'reservation_time' => $data['reservation_time'],
-            'guest_count'      => $data['guest_count'],
-            'area'             => $data['area'],
-            'table_number'     => $data['table_number'],
-            'status'           => 'Pending',
-            'special_request'  => $data['special_request'] ?? null,
-        ]);
+        return Cart::with(['product', 'menu'])
+            ->where('user_id', Auth::id())
+            ->get();
     }
 
-    public function validateTableSlot(array $data, ?int $excludeId = null): void
+    /**
+     * Get total price of all cart items.
+     */
+    public function getTotal(): float
     {
-        $date = Carbon::parse($data['reservation_date']);
-
-        if ($date->isPast() && !$date->isToday()) {
-            throw new \Exception('Tidak bisa booking tanggal yang telah lewat.');
-        }
-
-        $time = $data['reservation_time'];
-        if ($time < self::OPEN_HOUR || $time >= self::CLOSE_HOUR) {
-            throw new \Exception('Jam operasional kami: ' . self::OPEN_HOUR . ' - ' . self::CLOSE_HOUR . '.');
-        }
-
-        $area = $data['area'];
-        $tableNumber = $data['table_number'] ?? null;
-        $tablesList = TableReservation::getTablesList();
-
-        if (!$tableNumber || !isset($tablesList[$area]) || !in_array($tableNumber, $tablesList[$area])) {
-            throw new \Exception('Nomor meja atau ruangan tidak valid untuk area yang dipilih.');
-        }
-
-        if (TableReservation::isTableBooked($data['reservation_date'], $time, $tableNumber, $excludeId)) {
-            $formattedDate = $date->translatedFormat('d F Y');
-            throw new \Exception("Tempat sudah full/sudah dibooking! Meja atau ruangan \"{$tableNumber}\" sudah dipesan untuk tanggal {$formattedDate} jam {$time} WIB. Silahkan pilih meja/ruangan atau jam lain.");
-        }
-
-        if (!TableReservation::isSlotAvailable($data['reservation_date'], $time, $data['area'], self::TABLE_CAPACITY_PER_SLOT, $excludeId)) {
-            throw new \Exception('Slot waktu dan area ini secara keseluruhan sudah penuh. Silahkan pilih waktu atau area lain.');
-        }
+        return $this->getCart()->sum(fn ($item) => $item->subtotal);
     }
 
-    public function updateTableReservation(TableReservation $reservation, array $data): TableReservation
+    /**
+     * Get total number of items in cart.
+     */
+    public function getCount(): int
     {
-        $this->validateTableSlot($data, $reservation->id);
-
-        $reservation->update([
-            'name'             => $data['name'],
-            'phone'            => $data['phone'],
-            'email'            => $data['email'],
-            'reservation_date' => $data['reservation_date'],
-            'reservation_time' => $data['reservation_time'],
-            'guest_count'      => $data['guest_count'],
-            'area'             => $data['area'],
-            'table_number'     => $data['table_number'],
-            'special_request'  => $data['special_request'] ?? null,
-        ]);
-
-        return $reservation;
+        return Cart::where('user_id', Auth::id())->sum('quantity');
     }
 
-    public function createPsReservation(array $data): PsReservation
+    /**
+     * Add item to cart. If item already exists, increment quantity.
+     */
+    public function addToCart(?int $productId, int $quantity, ?int $menuId = null): array
     {
-        $startTime = $data['start_time'];
-        $duration  = (int) $data['duration'];
-        $endTime   = Carbon::parse($data['reservation_date'] . ' ' . $startTime)
-                        ->addHours($duration)
-                        ->format('H:i');
+        // Validate that the item exists
+        if ($productId) {
+            $product = Product::find($productId);
+            if (!$product) {
+                return ['success' => false, 'message' => 'Produk tidak ditemukan.'];
+            }
+            if ($product->stock < $quantity) {
+                return ['success' => false, 'message' => 'Stok produk tidak mencukupi.'];
+            }
+        } elseif ($menuId) {
+            $menu = Menu::find($menuId);
+            if (!$menu) {
+                return ['success' => false, 'message' => 'Menu tidak ditemukan.'];
+            }
+        } else {
+            return ['success' => false, 'message' => 'Item tidak valid.'];
+        }
 
-        $this->validatePsSlot($data, $endTime);
+        // Check if item already in cart
+        $existing = Cart::where('user_id', Auth::id())
+            ->where('product_id', $productId)
+            ->where('menu_id', $menuId)
+            ->first();
 
-        $pricePerHour = PsReservation::getPricePerHour($data['console_type']);
-        $totalPrice   = $pricePerHour * $duration;
+        if ($existing) {
+            $newQty = $existing->quantity + $quantity;
 
-        return PsReservation::create([
-            'reservation_code' => PsReservation::generateCode(),
-            'user_id'          => auth()->id(),
-            'name'             => $data['name'],
-            'phone'            => $data['phone'],
-            'reservation_date' => $data['reservation_date'],
-            'start_time'       => $startTime,
-            'duration'         => $duration,
-            'end_time'         => $endTime,
-            'console_type'     => $data['console_type'],
-            'total_price'      => $totalPrice,
-            'status'           => 'Pending',
-            'notes'            => $data['notes'] ?? null,
-        ]);
+            // Check stock for products
+            if ($productId && $product->stock < $newQty) {
+                return ['success' => false, 'message' => 'Stok produk tidak mencukupi untuk jumlah tersebut.'];
+            }
+
+            $existing->update(['quantity' => $newQty]);
+        } else {
+            Cart::create([
+                'user_id'    => Auth::id(),
+                'product_id' => $productId,
+                'menu_id'    => $menuId,
+                'quantity'   => $quantity,
+            ]);
+        }
+
+        return ['success' => true, 'message' => 'Item berhasil ditambahkan ke keranjang.'];
     }
 
-    public function validatePsSlot(array $data, string $endTime, ?int $excludeId = null): void
+    /**
+     * Update quantity of a cart item. If quantity is 0, remove the item.
+     */
+    public function updateQuantity(int $cartId, int $quantity): array
     {
-        $date = Carbon::parse($data['reservation_date']);
+        $cartItem = Cart::where('id', $cartId)
+            ->where('user_id', Auth::id())
+            ->first();
 
-        if ($date->isPast() && !$date->isToday()) {
-            throw new \Exception('Tidak bisa booking tanggal yang telah lewat.');
+        if (!$cartItem) {
+            return ['success' => false, 'message' => 'Item tidak ditemukan di keranjang.'];
         }
 
-        if ($data['start_time'] < self::OPEN_HOUR || $endTime > self::CLOSE_HOUR) {
-            throw new \Exception('Jam operasional kami: ' . self::OPEN_HOUR . ' - ' . self::CLOSE_HOUR . '.');
+        if ($quantity <= 0) {
+            $cartItem->delete();
+            return ['success' => true, 'message' => 'Item dihapus dari keranjang.'];
         }
 
-        if (PsReservation::hasConflict($data['reservation_date'], $data['start_time'], $endTime, $data['console_type'], $excludeId)) {
-            throw new \Exception('Slot waktu ' . $data['console_type'] . ' ini sudah dipesan. Silahkan pilih waktu lain.');
+        // Check stock for products
+        if ($cartItem->product_id) {
+            $product = $cartItem->product;
+            if ($product && $product->stock < $quantity) {
+                return ['success' => false, 'message' => 'Stok produk tidak mencukupi.'];
+            }
         }
+
+        $cartItem->update(['quantity' => $quantity]);
+
+        return ['success' => true, 'message' => 'Keranjang berhasil diperbarui.'];
     }
 
-    public function updatePsReservation(PsReservation $psReservation, array $data): PsReservation
+    /**
+     * Remove a specific item from the cart.
+     */
+    public function removeItem(int $cartId): void
     {
-        $startTime = $data['start_time'];
-        $duration  = (int) $data['duration'];
-        $endTime   = Carbon::parse($data['reservation_date'] . ' ' . $startTime)
-                        ->addHours($duration)
-                        ->format('H:i');
+        Cart::where('id', $cartId)
+            ->where('user_id', Auth::id())
+            ->delete();
+    }
 
-        $this->validatePsSlot($data, $endTime, $psReservation->id);
-
-        $pricePerHour = PsReservation::getPricePerHour($data['console_type']);
-        $totalPrice   = $pricePerHour * $duration;
-
-        $psReservation->update([
-            'name'             => $data['name'],
-            'phone'            => $data['phone'],
-            'reservation_date' => $data['reservation_date'],
-            'start_time'       => $startTime,
-            'duration'         => $duration,
-            'end_time'         => $endTime,
-            'console_type'     => $data['console_type'],
-            'total_price'      => $totalPrice,
-            'notes'            => $data['notes'] ?? null,
-        ]);
-
-        return $psReservation;
+    /**
+     * Clear all cart items for the authenticated user.
+     */
+    public function clearCart(): void
+    {
+        Cart::where('user_id', Auth::id())->delete();
     }
 }

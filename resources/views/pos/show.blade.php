@@ -5,117 +5,158 @@
 @section('page-subtitle', $transaction->transaction_number)
 
 @section('content')
-<div class="max-w-3xl mx-auto space-y-6 animate-fade-in-up">
+<div class="max-w-3xl mx-auto space-y-5 animate-fade-in-up">
 
     {{-- Top Actions --}}
     <div class="flex items-center justify-between">
         <a href="{{ route('admin.pos.history') }}"
-           class="flex items-center gap-2 text-cream/35 hover:text-mocca transition-colors text-sm font-medium group">
-            <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+           class="flex items-center gap-2 text-olive-900/40 hover:text-olive-800 transition-colors text-sm font-medium group">
+            <span class="material-symbols-outlined text-sm transition-transform duration-200 group-hover:-translate-x-0.5">arrow_back</span>
             Kembali ke Riwayat
         </a>
         <button onclick="window.print()"
-                class="flex items-center gap-2 btn-outline-mocca print:hidden">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                class="btn-outline-mocca flex items-center gap-2 print:hidden">
+            <span class="material-symbols-outlined" style="font-size:16px">print</span>
             Cetak Struk
         </button>
     </div>
 
     {{-- Receipt Card --}}
-    <div class="admin-card overflow-hidden">
-        {{-- Header --}}
-        <div class="p-8 text-center border-b border-white/[0.06]">
-            <div class="w-14 h-14 rounded-2xl bg-mocca/10 border border-mocca/20 flex items-center justify-center mx-auto mb-4">
-                <svg class="w-7 h-7 text-mocca" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+    <div class="bg-white border border-olive-900/8 rounded-2xl shadow-sm overflow-hidden">
+
+        {{-- Receipt Header --}}
+        <div class="px-8 py-8 text-center border-b border-olive-900/6 bg-gradient-to-b from-beige-50 to-white">
+            <div class="w-14 h-14 rounded-2xl bg-white border border-olive-200/70 shadow-sm flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-olive-600" style="font-size:26px">storefront</span>
             </div>
-            <h2 class="font-display text-2xl text-mocca font-bold tracking-wide">FILO-COFFEE</h2>
-            <p class="text-cream/25 text-xs mt-1">Point of Sale Receipt</p>
-            <p class="text-cream/15 text-[0.6rem] mt-0.5 tracking-widest uppercase">www.filo-coffee.id</p>
+            <h2 class="font-display text-2xl text-olive-900 font-bold tracking-wide">FILO COFFEE</h2>
+            <p class="text-olive-900/35 text-xs mt-1 font-medium">Point of Sale — Struk Transaksi</p>
+            <p class="text-olive-900/20 text-[0.6rem] mt-0.5 tracking-widest uppercase font-mono">www.filo-coffee.id</p>
         </div>
 
-        {{-- Transaction Info --}}
-        <div class="grid grid-cols-2 gap-6 p-6 border-b border-white/[0.05]">
-            <div class="space-y-1">
-                <p class="text-cream/25 text-[0.6rem] uppercase tracking-widest font-semibold">No. Transaksi</p>
-                <p class="text-mocca font-bold font-mono text-sm tracking-wider">{{ $transaction->transaction_number }}</p>
+        {{-- Transaction Meta --}}
+        <div class="grid grid-cols-2 gap-0 border-b border-olive-900/6">
+            {{-- No. Transaksi --}}
+            <div class="p-5 border-r border-olive-900/6">
+                <p class="text-[10px] text-olive-900/35 uppercase tracking-widest font-bold mb-1.5">No. Transaksi</p>
+                <span class="font-mono text-xs font-bold text-mocca-dark bg-beige-100 px-2.5 py-1 rounded-lg border border-beige-200 tracking-wide inline-block">
+                    {{ $transaction->transaction_number }}
+                </span>
             </div>
-            <div class="space-y-1 text-right">
-                <p class="text-cream/25 text-[0.6rem] uppercase tracking-widest font-semibold">Tanggal</p>
-                <p class="text-cream font-semibold text-sm">{{ $transaction->created_at->format('d M Y') }}</p>
-                <p class="text-cream/40 text-xs font-mono">{{ $transaction->created_at->format('H:i:s') }}</p>
+            {{-- Tanggal --}}
+            <div class="p-5">
+                <p class="text-[10px] text-olive-900/35 uppercase tracking-widest font-bold mb-1.5">Tanggal & Waktu</p>
+                <p class="text-sm font-semibold text-olive-900">{{ $transaction->created_at->format('d M Y') }}</p>
+                <p class="text-xs text-olive-900/40 font-mono mt-0.5">{{ $transaction->created_at->format('H:i:s') }}</p>
             </div>
-            <div class="space-y-1">
-                <p class="text-cream/25 text-[0.6rem] uppercase tracking-widest font-semibold">Kasir</p>
+            {{-- Kasir --}}
+            <div class="p-5 border-r border-t border-olive-900/6">
+                <p class="text-[10px] text-olive-900/35 uppercase tracking-widest font-bold mb-1.5">Kasir</p>
                 <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full bg-mocca/10 border border-mocca/20 flex items-center justify-center flex-shrink-0">
-                        <span class="text-mocca text-[0.55rem] font-bold">{{ substr($transaction->user->name ?? 'S', 0, 1) }}</span>
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-olive-100 to-olive-200 border border-olive-300/50 flex items-center justify-center flex-shrink-0">
+                        <span class="text-olive-700 text-[0.6rem] font-bold">{{ substr($transaction->user->name ?? 'S', 0, 1) }}</span>
                     </div>
-                    <span class="text-cream text-sm font-medium">{{ $transaction->user->name ?? 'System' }}</span>
+                    <span class="text-sm font-medium text-olive-900">{{ $transaction->user->name ?? 'System' }}</span>
                 </div>
             </div>
-            <div class="space-y-1 text-right">
-                <p class="text-cream/25 text-[0.6rem] uppercase tracking-widest font-semibold">Status</p>
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.6rem] font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
-                    LUNAS
+            {{-- Status --}}
+            <div class="p-5 border-t border-olive-900/6">
+                <p class="text-[10px] text-olive-900/35 uppercase tracking-widest font-bold mb-1.5">Status</p>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                    Lunas
                 </span>
             </div>
         </div>
 
-        {{-- Items Table --}}
-        <div class="p-6 border-b border-white/[0.05]">
-            <p class="text-cream/25 text-[0.6rem] uppercase tracking-widest font-semibold mb-4">Item Pesanan</p>
-            <div class="space-y-3">
+        {{-- Item List --}}
+        <div class="p-6 border-b border-olive-900/6">
+            <p class="text-[10px] text-olive-900/35 uppercase tracking-widest font-bold mb-4">Item Pesanan</p>
+            <div class="space-y-0 divide-y divide-olive-900/4">
                 @foreach($transaction->items as $item)
-                <div class="flex items-center gap-4">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-cream text-sm font-semibold truncate">{{ $item->menu_name }}</p>
-                        <p class="text-cream/35 text-xs font-mono">{{ $item->quantity }} × Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                <div class="flex items-center gap-4 py-3 @if($loop->first) pt-0 @endif @if($loop->last) pb-0 @endif">
+                    {{-- Item index badge --}}
+                    <div class="w-6 h-6 rounded-md bg-olive-50 border border-olive-200/60 flex items-center justify-center flex-shrink-0">
+                        <span class="text-[0.6rem] font-bold text-olive-600">{{ $loop->index + 1 }}</span>
                     </div>
-                    <p class="text-mocca font-bold font-mono text-sm flex-shrink-0">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                    {{-- Name & qty --}}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-olive-900 truncate">{{ $item->menu_name }}</p>
+                        <p class="text-xs text-olive-900/40 font-mono mt-0.5">
+                            {{ $item->quantity }} × Rp {{ number_format($item->price, 0, ',', '.') }}
+                        </p>
+                    </div>
+                    {{-- Subtotal --}}
+                    <p class="text-sm font-bold text-olive-900 font-mono flex-shrink-0">
+                        Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                    </p>
                 </div>
-                @if(!$loop->last)
-                <div class="border-t border-white/[0.04]"></div>
-                @endif
                 @endforeach
             </div>
         </div>
 
         {{-- Totals --}}
-        <div class="p-6 space-y-3">
+        <div class="p-6 space-y-2.5 border-b border-olive-900/6 bg-olive-50/30">
+            {{-- Subtotal --}}
             <div class="flex justify-between items-center">
-                <span class="text-cream/40 text-xs uppercase tracking-wider font-semibold">Subtotal</span>
-                <span class="text-cream/70 font-mono text-sm font-semibold">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</span>
+                <span class="text-xs text-olive-900/45 uppercase tracking-wider font-semibold">Subtotal</span>
+                <span class="text-sm text-olive-900/65 font-mono font-medium">
+                    Rp {{ number_format($transaction->total_price, 0, ',', '.') }}
+                </span>
             </div>
-            <div class="border-t border-dashed border-white/[0.08] pt-3 flex justify-between items-center">
-                <span class="text-cream font-bold uppercase tracking-wide text-sm">Total</span>
-                <span class="font-display text-mocca text-xl font-bold">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</span>
-            </div>
+
+            {{-- Divider --}}
+            <div class="border-t border-dashed border-olive-900/12 my-1"></div>
+
+            {{-- Total --}}
             <div class="flex justify-between items-center">
-                <span class="text-cream/40 text-xs uppercase tracking-wider font-semibold">Tunai</span>
-                <span class="text-cream/60 font-mono text-sm">Rp {{ number_format($transaction->cash_received, 0, ',', '.') }}</span>
+                <span class="text-sm font-bold text-olive-900 uppercase tracking-wide">TOTAL</span>
+                <span class="font-display text-xl font-bold text-olive-900">
+                    Rp {{ number_format($transaction->total_price, 0, ',', '.') }}
+                </span>
             </div>
-            <div class="border-t border-white/[0.05] pt-3 flex justify-between items-center">
-                <span class="text-cream/40 text-xs uppercase tracking-wider font-semibold">Kembalian</span>
-                <span class="text-mocca font-bold font-mono text-lg">Rp {{ number_format($transaction->cash_change, 0, ',', '.') }}</span>
+
+            {{-- Divider --}}
+            <div class="border-t border-olive-900/8 pt-2 mt-1 space-y-2">
+                {{-- Tunai --}}
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-olive-900/45 uppercase tracking-wider font-semibold">Tunai Diterima</span>
+                    <span class="text-sm text-olive-900/60 font-mono">
+                        Rp {{ number_format($transaction->cash_received, 0, ',', '.') }}
+                    </span>
+                </div>
+                {{-- Kembalian --}}
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-olive-900/45 uppercase tracking-wider font-semibold">Kembalian</span>
+                    <span class="text-base font-bold text-mocca-dark font-mono">
+                        Rp {{ number_format($transaction->cash_change, 0, ',', '.') }}
+                    </span>
+                </div>
             </div>
         </div>
 
         {{-- Footer --}}
-        <div class="px-6 pb-8 text-center border-t border-dashed border-white/[0.05] pt-6">
-            <p class="text-cream/20 text-xs italic">Terima kasih telah berkunjung ke Filo-Coffee!</p>
-            <p class="text-cream/10 text-[0.6rem] mt-1 tracking-widest uppercase">Simpan struk ini sebagai bukti transaksi</p>
+        <div class="px-8 py-6 text-center">
+            <div class="flex items-center gap-3 justify-center mb-3">
+                <div class="h-px flex-1 bg-olive-900/6"></div>
+                <span class="material-symbols-outlined text-olive-300" style="font-size:16px">favorite</span>
+                <div class="h-px flex-1 bg-olive-900/6"></div>
+            </div>
+            <p class="text-olive-900/40 text-xs italic">Terima kasih telah berkunjung ke Filo Coffee!</p>
+            <p class="text-olive-900/20 text-[0.6rem] mt-1 tracking-widest uppercase">Simpan struk ini sebagai bukti transaksi</p>
         </div>
     </div>
+
 </div>
 
+{{-- Print Styles --}}
 <style>
 @media print {
-    body { background: white !important; color: #000 !important; }
-    .admin-card { box-shadow: none !important; border: none !important; background: white !important; }
-    aside, header { display: none !important; }
-    .print\:hidden { display: none !important; }
-    main { padding: 0 !important; }
+    aside, header, .print\:hidden { display: none !important; }
+    main { margin: 0 !important; padding: 0 !important; }
+    body { background: white !important; }
+    .bg-white { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
+    .animate-fade-in-up { animation: none !important; }
 }
 </style>
 @endsection

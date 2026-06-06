@@ -49,14 +49,13 @@ class CheckoutController extends Controller
         try {
             $order = $this->orderService->createOrder($request->all());
 
-            // If Midtrans selected, generate Snap token immediately
+            // If Midtrans selected, generate QRIS image URL immediately via Core API
             if ($request->payment_method === 'Midtrans') {
                 try {
-                    $snapToken = $this->midtransService->generateSnapToken($order);
-                    $order->update(['midtrans_token' => $snapToken]);
+                    $qrCodeUrl = $this->midtransService->chargeOrderQris($order);
+                    $order->update(['midtrans_token' => $qrCodeUrl]);
                 } catch (\Exception $e) {
-                    // Token failed — still redirect to order page, user can retry from there
-                    \Illuminate\Support\Facades\Log::error('Midtrans snap token error: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error('Midtrans QRIS error: ' . $e->getMessage());
                 }
             }
 
