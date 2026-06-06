@@ -6185,6 +6185,7 @@
         },
         {
             "name": "laravel/pail",
+<<<<<<< HEAD
             "version": "v1.2.7",
             "source": {
                 "type": "git",
@@ -6217,6 +6218,28 @@
                 "phpstan/phpstan": "^1.12.27",
                 "symfony/var-dumper": "^6.3|^7.0|^8.0",
                 "symfony/yaml": "^6.3|^7.0|^8.0"
+=======
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/pail.git",
+                "reference": "a9e8a2c8e5f3b7d1c4f6e9a2b5d8e1f4a7c0b3d6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/pail/zipball/a9e8a2c8e5f3b7d1c4f6e9a2b5d8e1f4a7c0b3d6",
+                "reference": "a9e8a2c8e5f3b7d1c4f6e9a2b5d8e1f4a7c0b3d6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcntl": "*",
+                "laravel/framework": "^11.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^9.0",
+                "pestphp/pest": "^2.0"
+>>>>>>> 0f463162674cfa87353501ae1081e96dc88fd46a
             },
             "type": "library",
             "extra": {
@@ -6224,9 +6247,12 @@
                     "providers": [
                         "Laravel\\Pail\\PailServiceProvider"
                     ]
+<<<<<<< HEAD
                 },
                 "branch-alias": {
                     "dev-main": "1.x-dev"
+=======
+>>>>>>> 0f463162674cfa87353501ae1081e96dc88fd46a
                 }
             },
             "autoload": {
@@ -6242,6 +6268,7 @@
                 {
                     "name": "Taylor Otwell",
                     "email": "taylor@laravel.com"
+<<<<<<< HEAD
                 },
                 {
                     "name": "Nuno Maduro",
@@ -6255,13 +6282,27 @@
                 "laravel",
                 "logs",
                 "php",
+=======
+                }
+            ],
+            "description": "Dive into your Laravel application's log files directly from the terminal.",
+            "keywords": [
+                "laravel",
+                "log",
+>>>>>>> 0f463162674cfa87353501ae1081e96dc88fd46a
                 "tail"
             ],
             "support": {
                 "issues": "https://github.com/laravel/pail/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/laravel/pail"
             },
             "time": "2026-05-20T22:24:57+00:00"
+=======
+                "source": "https://github.com/laravel/pail/tree/v1.1.1"
+            },
+            "time": "2024-03-05T14:30:00+00:00"
+>>>>>>> 0f463162674cfa87353501ae1081e96dc88fd46a
         },
         {
             "name": "laravel/pint",
