@@ -21,10 +21,22 @@ class AppServiceProvider extends ServiceProvider
 
         // Share visible pages to all views
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
-            $visiblePages = [];
+            // Semua route yang dikenal oleh sistem navigasi
+            $allKnownRoutes = [
+                'home', 'about', 'menu', 'shop', 'services',
+                'news', 'member', 'reservation.index', 'playstation.index', 'contact',
+            ];
+
+            $visiblePages = $allKnownRoutes; // default: tampilkan semua
+
             if (\Illuminate\Support\Facades\Schema::hasTable('pages')) {
-                $visiblePages = \App\Models\Page::where('is_visible', true)->pluck('route_name')->toArray();
+                $dbPages = \App\Models\Page::where('is_visible', true)->pluck('route_name')->toArray();
+                // Hanya gunakan data dari DB jika tabel tidak kosong
+                if (!empty($dbPages)) {
+                    $visiblePages = $dbPages;
+                }
             }
+
             $view->with('visiblePages', $visiblePages);
         });
 
