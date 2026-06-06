@@ -14,13 +14,22 @@ class CheckPageVisibility
     {
         $currentRoute = Route::currentRouteName();
 
-        // Ambil data halaman berdasarkan route name
-        $page = Page::where('route_name', $currentRoute)->first();
+        if (!$currentRoute) {
+            return $next($request);
+        }
+
+        // Periksa juga parent route (misal: 'menu.show' -> cek 'menu')
+        $routeParts = explode('.', $currentRoute);
+        $routeBase  = $routeParts[0];
+
+        // Coba cari halaman dengan route_name exact atau route_name parent
+        $page = Page::where('route_name', $currentRoute)->first()
+             ?? Page::where('route_name', $routeBase)->first()
+             ?? Page::where('route_name', $routeBase . '.index')->first();
 
         // Jika halaman ditemukan dan is_visible = false
         if ($page && !$page->is_visible) {
             // Berikan akses hanya jika user adalah admin (agar bisa testing)
-            // Jika Anda ingin benar-benar 404 untuk semua orang, hapus kondisi !auth()->user()?->isAdmin()
             if (!auth()->check() || !auth()->user()->isAdmin()) {
                 abort(404);
             }

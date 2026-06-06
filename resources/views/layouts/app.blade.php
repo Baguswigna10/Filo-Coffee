@@ -450,7 +450,6 @@
     </script>
 
     {{-- Page-specific scripts injected via @push('scripts') --}}
-    @stack('scripts')
 </body>
 </html>
 

@@ -35,15 +35,19 @@
                     ['route' => 'playstation.index', 'label' => 'PlayStation'],
                     ['route' => 'contact',           'label' => 'Contact'],
                 ] as $nav)
+                @php
+                    $routeBase = explode('.', $nav['route'])[0];
+                    $isActive  = request()->routeIs($nav['route']) || request()->routeIs($routeBase . '.*');
+                @endphp
                 @if(in_array($nav['route'], $visiblePages ?? []))
                 <a href="{{ route($nav['route']) }}"
                    class="relative px-3 py-2 rounded-xl text-[0.8rem] font-semibold transition-all duration-300 group
-                          {{ request()->routeIs($nav['route'])
+                          {{ $isActive
                              ? 'text-olive-700 bg-olive-50'
                              : 'text-olive-800/55 hover:text-olive-900 hover:bg-olive-50/70' }}">
                     {{ $nav['label'] }}
                     {{-- Active underline indicator --}}
-                    @if(request()->routeIs($nav['route']))
+                    @if($isActive)
                     <span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-gradient-to-r from-olive-600 to-olive-500 rounded-full"></span>
                     @endif
                 </a>
@@ -132,7 +136,7 @@
         <div class="px-4 py-5 space-y-1 max-h-[70vh] overflow-y-auto">
             @foreach([
                 ['route' => 'home',              'label' => 'Home'],
-                ['route' => 'about',             'label' => 'About'],
+                ['route' => 'about',             'label' => 'About Filo'],
                 ['route' => 'menu',              'label' => 'Menu'],
                 ['route' => 'shop',              'label' => 'Shop Beans'],
                 ['route' => 'services',          'label' => 'Services'],
@@ -142,9 +146,13 @@
                 ['route' => 'playstation.index', 'label' => 'PlayStation'],
                 ['route' => 'contact',           'label' => 'Contact'],
             ] as $nav)
+            @php
+                $routeBase = explode('.', $nav['route'])[0];
+                $isActive  = request()->routeIs($nav['route']) || request()->routeIs($routeBase . '.*');
+            @endphp
             @if(in_array($nav['route'], $visiblePages ?? []))
-            <a href="{{ route($nav['route']) }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs($nav['route']) ? 'text-olive-700 bg-olive-50 border border-olive-200' : 'text-olive-700/60 hover:text-olive-900 hover:bg-olive-50' }}">
-                @if(request()->routeIs($nav['route']))
+            <a href="{{ route($nav['route']) }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 {{ $isActive ? 'text-olive-700 bg-olive-50 border border-olive-200' : 'text-olive-700/60 hover:text-olive-900 hover:bg-olive-50' }}">
+                @if($isActive)
                 <span class="w-1.5 h-1.5 bg-olive-600 rounded-full"></span>
                 @endif
                 {{ $nav['label'] }}
