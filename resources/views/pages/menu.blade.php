@@ -39,8 +39,9 @@
 
     {{-- Section Header --}}
     <div class="mb-16 reveal">
-        <span class="text-beige-600 text-xs font-bold uppercase tracking-[0.2m] block mb-2">The Complete Collection</span>
-        <h2 class="font-display text-3xl md:text-5xl text-olive-900 font-bold">Semua Menu Kami</h2>
+        <span class="text-beige-600 text-xs font-bold uppercase tracking-[0.25em] block mb-2">Filo Roastery Selection</span>
+        <h2 class="font-display text-3xl md:text-5xl text-olive-900 font-bold">Koleksi Biji Kopi Sangrai</h2>
+        <p class="text-olive-850/60 mt-4 max-w-2xl text-base leading-relaxed">Pilihan biji kopi arabika terbaik dari berbagai pelosok sabang sampai merauke, di-roast presisi oleh *head roaster* kami demi mempertahankan profil rasa aslinya.</p>
     </div>
 
     {{-- Filters & Sort --}}
@@ -49,15 +50,15 @@
         <div class="flex flex-wrap gap-2.5 justify-center">
             <a href="{{ route('menu') }}"
                class="px-6 py-3 rounded-2xl text-[0.65rem] font-bold uppercase tracking-wider transition-all duration-300 {{ $category === 'all'
-                   ? 'bg-olive-800 text-beige-50 shadow-md shadow-olive-900/10'
-                   : 'bg-beige-100 border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
+                   ? 'bg-olive-800 text-beige-50'
+                   : 'bg-white border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
                 Semua Menu
             </a>
             @foreach($categories as $cat)
             <a href="{{ route('menu', ['category' => $cat]) }}"
                class="px-6 py-3 rounded-2xl text-[0.65rem] font-bold uppercase tracking-wider transition-all duration-300 {{ $category === $cat
-                   ? 'bg-olive-800 text-beige-50 shadow-md shadow-olive-900/10'
-                   : 'bg-beige-100 border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
+                   ? 'bg-olive-800 text-beige-50'
+                   : 'bg-white border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
                 {{ $cat }}
             </a>
             @endforeach
@@ -138,7 +139,7 @@
             {{-- Middle Image with Price Badge --}}
             <div class="relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-olive-950/40 border border-white/5 shadow-inner z-20">
                 @if($menu->image)
-                    <img src="{{ $menu->image_url }}" alt="{{ $menu->name }}" class="w-full h-full object-cover transform duration-1000 group-hover:scale-105">
+                    <img src="{{ $menu->image_url }}" alt="{{ $menu->name }}" class="w-full h-full object-cover transform duration-500 group-hover:scale-105">
                 @else
                     <div class="w-full h-full flex items-center justify-center opacity-20 text-6xl bg-olive-950/20">☕</div>
                 @endif

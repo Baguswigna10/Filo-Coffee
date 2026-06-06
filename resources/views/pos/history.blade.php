@@ -7,25 +7,65 @@
 @section('content')
 <div class="space-y-6 animate-fade-in-up">
 
-    {{-- Header --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <h2 class="text-cream text-lg font-semibold">Riwayat POS</h2>
-            <p class="text-cream/30 text-sm mt-0.5">Daftar transaksi yang diproses melalui kasir</p>
+    {{-- Stats Summary --}}
+    <div class="grid grid-cols-3 gap-4">
+        <div class="bg-white border border-olive-900/8 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+            <div class="w-11 h-11 rounded-xl bg-olive-50 border border-olive-200/60 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-olive-600" style="font-size:20px">receipt_long</span>
+            </div>
+            <div>
+                <p class="text-[10px] text-olive-900/40 uppercase tracking-widest font-bold">Total Transaksi</p>
+                <p class="text-2xl font-bold text-olive-900 font-display leading-none mt-0.5">{{ $totalCount }}</p>
+            </div>
         </div>
-        <a href="{{ route('admin.pos.index') }}"
-           class="btn-mocca flex items-center gap-2 shadow-lg shadow-mocca/10">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-            Buka Kasir
-        </a>
+        <div class="bg-white border border-olive-900/8 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+            <div class="w-11 h-11 rounded-xl bg-beige-100 border border-beige-200/60 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-mocca-dark" style="font-size:20px">payments</span>
+            </div>
+            <div>
+                <p class="text-[10px] text-olive-900/40 uppercase tracking-widest font-bold">Total Pendapatan</p>
+                <p class="text-lg font-bold text-olive-900 font-display leading-none mt-0.5">
+                    Rp {{ number_format($totalRevenue, 0, ',', '.') }}
+                </p>
+            </div>
+        </div>
+        <div class="bg-white border border-olive-900/8 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
+            <div class="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-emerald-600" style="font-size:20px">today</span>
+            </div>
+            <div>
+                <p class="text-[10px] text-olive-900/40 uppercase tracking-widest font-bold">Transaksi Hari Ini</p>
+                <p class="text-2xl font-bold text-olive-900 font-display leading-none mt-0.5">{{ $todayCount }}</p>
+            </div>
+        </div>
     </div>
 
-    {{-- Table --}}
-    <div class="admin-card overflow-hidden">
+    {{-- Table Card --}}
+    <div class="bg-white border border-olive-900/8 rounded-2xl shadow-sm overflow-hidden">
+
+        {{-- Card Header --}}
+        <div class="px-6 py-4 border-b border-olive-900/6 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-olive-50 rounded-lg border border-olive-200/60 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-olive-600" style="font-size:16px">history</span>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-olive-900">Daftar Transaksi</h3>
+                    <p class="text-xs text-olive-900/40">Semua transaksi POS tercatat</p>
+                </div>
+            </div>
+            <a href="{{ route('admin.pos.index') }}"
+               class="btn-mocca flex items-center gap-2 shadow-sm">
+                <span class="material-symbols-outlined" style="font-size:15px">point_of_sale</span>
+                Buka Kasir
+            </a>
+        </div>
+
+        {{-- Table --}}
         <div class="overflow-x-auto">
             <table class="w-full admin-table">
                 <thead>
-                    <tr class="border-b border-white/[0.05]">
+                    <tr class="border-b border-olive-900/5 bg-olive-50/50">
                         <th class="text-left">No. Transaksi</th>
                         <th class="text-left">Tanggal & Waktu</th>
                         <th class="text-left">Kasir</th>
@@ -35,52 +75,74 @@
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-white/[0.03]">
+                <tbody class="divide-y divide-olive-900/4">
                     @forelse($transactions as $transaction)
-                    <tr class="hover:bg-white/[0.015] transition-colors">
+                    <tr class="hover:bg-olive-50/40 transition-colors duration-150">
+                        {{-- No. Transaksi --}}
                         <td>
-                            <span class="text-mocca font-bold font-mono text-xs tracking-wider">{{ $transaction->transaction_number }}</span>
+                            <span class="font-mono text-xs font-bold text-mocca-dark bg-beige-100 px-2.5 py-1 rounded-lg border border-beige-200/80 tracking-wide">
+                                {{ $transaction->transaction_number }}
+                            </span>
                         </td>
-                        <td class="text-cream/50">
-                            <div class="text-sm">{{ $transaction->created_at->format('d M Y') }}</div>
-                            <div class="text-xs text-cream/25 font-mono">{{ $transaction->created_at->format('H:i:s') }}</div>
+
+                        {{-- Tanggal --}}
+                        <td>
+                            <div class="text-sm font-semibold text-olive-900">{{ $transaction->created_at->format('d M Y') }}</div>
+                            <div class="text-xs text-olive-900/35 font-mono mt-0.5">{{ $transaction->created_at->format('H:i:s') }}</div>
                         </td>
-                        <td class="text-cream/60">
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-mocca/10 border border-mocca/20 flex items-center justify-center flex-shrink-0">
-                                    <span class="text-mocca text-[0.55rem] font-bold">{{ substr($transaction->user->name ?? 'S', 0, 1) }}</span>
+
+                        {{-- Kasir --}}
+                        <td>
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-olive-100 to-olive-200 border border-olive-300/50 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-olive-700 text-[0.6rem] font-bold">{{ substr($transaction->user->name ?? 'S', 0, 1) }}</span>
                                 </div>
-                                <span class="text-sm">{{ $transaction->user->name ?? 'System' }}</span>
+                                <span class="text-sm text-olive-900/75 font-medium">{{ $transaction->user->name ?? 'System' }}</span>
                             </div>
                         </td>
+
+                        {{-- Total --}}
                         <td class="text-right">
-                            <span class="text-cream font-bold font-mono">Rp {{ number_format($transaction->total_price, 0, ',', '.') }}</span>
+                            <span class="text-sm font-bold text-olive-900 font-mono">
+                                Rp {{ number_format($transaction->total_price, 0, ',', '.') }}
+                            </span>
                         </td>
-                        <td class="text-right text-cream/50 text-sm font-mono">
-                            Rp {{ number_format($transaction->cash_received, 0, ',', '.') }}
-                        </td>
+
+                        {{-- Tunai --}}
                         <td class="text-right">
-                            <span class="text-mocca font-semibold text-sm font-mono">Rp {{ number_format($transaction->cash_change, 0, ',', '.') }}</span>
+                            <span class="text-sm text-olive-900/55 font-mono">
+                                Rp {{ number_format($transaction->cash_received, 0, ',', '.') }}
+                            </span>
                         </td>
+
+                        {{-- Kembalian --}}
+                        <td class="text-right">
+                            <span class="text-sm font-semibold text-mocca-dark font-mono">
+                                Rp {{ number_format($transaction->cash_change, 0, ',', '.') }}
+                            </span>
+                        </td>
+
+                        {{-- Aksi --}}
                         <td class="text-center">
                             <a href="{{ route('admin.pos.show', $transaction->id) }}"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                               style="background: rgba(204,177,150,0.08); color: #CCB196; border: 1px solid rgba(204,177,150,0.2);"
-                               onmouseover="this.style.background='rgba(204,177,150,0.15)'"
-                               onmouseout="this.style.background='rgba(204,177,150,0.08)'">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                                      text-olive-700 bg-olive-50 border border-olive-200/70
+                                      hover:bg-olive-100 hover:border-olive-300 transition-all duration-200">
+                                <span class="material-symbols-outlined" style="font-size:13px">visibility</span>
                                 Detail
                             </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-16 text-center">
+                        <td colspan="7" class="py-20 text-center">
                             <div class="flex flex-col items-center gap-3">
-                                <div class="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-cream/15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <div class="w-14 h-14 rounded-2xl bg-olive-50 border border-olive-200/60 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-olive-400" style="font-size:24px">receipt_long</span>
                                 </div>
-                                <p class="text-cream/25 text-sm">Belum ada transaksi tercatat.</p>
+                                <p class="text-sm font-semibold text-olive-900/50">Belum ada transaksi tercatat</p>
+                                <p class="text-xs text-olive-900/30">Mulai transaksi pertama dari halaman kasir</p>
+                                <a href="{{ route('admin.pos.index') }}" class="btn-mocca mt-1">Buka Kasir</a>
                             </div>
                         </td>
                     </tr>
@@ -88,8 +150,10 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Pagination --}}
         @if($transactions->hasPages())
-        <div class="px-6 py-4 border-t border-white/[0.05] pagination-wrapper">
+        <div class="px-6 py-4 border-t border-olive-900/5 bg-olive-50/30 pagination-wrapper">
             {{ $transactions->links() }}
         </div>
         @endif

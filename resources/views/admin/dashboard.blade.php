@@ -42,7 +42,7 @@
 {{-- Metrics Row --}}
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
     {{-- Daily Revenue --}}
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-olive-900/5 group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-olive-800/20">
         <div class="flex justify-between items-start mb-6">
             <div class="w-12 h-12 rounded-2xl bg-olive-100 flex items-center justify-center text-olive-800">
                 <span class="material-symbols-outlined text-xl">payments</span>
@@ -51,20 +51,20 @@
                 <span class="material-symbols-outlined text-[10px] mr-1">trending_up</span> Live
             </div>
         </div>
-        <p class="text-olive-900/40 text-[10px] font-bold uppercase tracking-widest mb-1">Total Pendapatan</p>
+        <p class="text-olive-900/40 text-[10px] font-bold tracking-widest mb-1">Total Pendapatan</p>
         <h3 class="font-display text-2xl font-bold text-olive-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
         
         <div class="mt-6 h-10 w-full flex items-end gap-1">
             @php $maxRevenue = $dailyRevenue->max('revenue') ?: 1; @endphp
             @foreach($dailyRevenue as $day)
                 @php $percentage = min(100, max(15, ($day->revenue / $maxRevenue) * 100)); @endphp
-                <div class="flex-1 bg-olive-500/20 hover:bg-olive-500 rounded-md transition-all duration-300" style="height: {{ $percentage }}%" title="Rp {{ number_format($day->revenue, 0, ',', '.') }}"></div>
+                <div class="flex-1 bg-olive-500/20 rounded-md" style="height: {{ $percentage }}%" title="Rp {{ number_format($day->revenue, 0, ',', '.') }}"></div>
             @endforeach
         </div>
     </div>
 
     {{-- Total Orders --}}
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-olive-900/5 group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+    <div class="bg-white p-6 rounded-3xl border border-olive-800/20">
         <div class="flex justify-between items-start mb-6">
             <div class="w-12 h-12 rounded-2xl bg-mocca/10 flex items-center justify-center text-mocca-dark">
                 <span class="material-symbols-outlined text-xl">shopping_cart</span>
@@ -73,7 +73,7 @@
                 {{ $pendingOrders }} pending
             </div>
         </div>
-        <p class="text-olive-900/40 text-[10px] font-bold uppercase tracking-widest mb-1">Total Pesanan</p>
+        <p class="text-olive-900/40 text-[10px] font-bold tracking-widest mb-1">Total Pesanan</p>
         <h3 class="font-display text-2xl font-bold text-olive-900">{{ $totalOrders }}</h3>
         
         <div class="mt-6 h-10 w-full flex items-end gap-1">
@@ -87,7 +87,7 @@
     </div>
 
     {{-- Total Users --}}
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-olive-900/5 group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+    <div class="bg-white p-6 rounded-3xl border border-olive-800/20">
         <div class="flex justify-between items-start mb-6">
             <div class="w-12 h-12 rounded-2xl bg-coffee-light/10 flex items-center justify-center text-coffee-light">
                 <span class="material-symbols-outlined text-xl">person_add</span>
@@ -96,7 +96,7 @@
                 Member
             </div>
         </div>
-        <p class="text-olive-900/40 text-[10px] font-bold uppercase tracking-widest mb-1">Total Member</p>
+        <p class="text-olive-900/40 text-[10px] font-bold tracking-widest mb-1">Total Member</p>
         <h3 class="font-display text-2xl font-bold text-olive-900">{{ $totalUsers }}</h3>
         
         <div class="mt-6 h-10 w-full flex items-end gap-1">
@@ -110,7 +110,7 @@
     </div>
 
     {{-- Stock Alerts --}}
-    <div class="bg-white p-6 rounded-3xl shadow-sm border border-olive-900/5 group hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+    <div class="bg-white p-6 rounded-3xl border border-olive-800/20">
         <div class="flex justify-between items-start mb-6">
             <div class="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center text-red-600">
                 <span class="material-symbols-outlined text-xl">warning</span>
@@ -125,7 +125,7 @@
             </div>
             @endif
         </div>
-        <p class="text-olive-900/40 text-[10px] font-bold uppercase tracking-widest mb-1">Stok Menipis</p>
+        <p class="text-olive-900/40 text-[10px] font-bold tracking-widest mb-1">Stok Menipis</p>
         <h3 class="font-display text-2xl font-bold text-olive-900">{{ $lowStockProducts }} produk</h3>
         
         <div class="mt-6 h-10 w-full flex items-end gap-1">
@@ -142,13 +142,13 @@
 {{-- Middle Row --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
     {{-- Sales Analytics Chart --}}
-    <div class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-olive-900/5">
+    <div class="lg:col-span-2 bg-white p-8 rounded-3xl border border-olive-800/20">
         <div class="flex justify-between items-center mb-10">
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-olive-800">bar_chart</span>
                 <h4 class="text-lg font-bold text-olive-900 font-display">Analitik Penjualan</h4>
             </div>
-            <div class="text-xs text-olive-900/40 font-bold uppercase tracking-widest bg-olive-50 px-3 py-1.5 rounded-xl">
+            <div class="text-xs text-olive-900/40 font-bold tracking-widest bg-olive-50 px-3 py-1.5 rounded-xl">
                 7 Hari Terakhir
             </div>
         </div>
@@ -160,7 +160,7 @@
                         $percentage = min(100, max(15, ($day->revenue / $maxRevenue) * 100));
                         $isToday = date('Y-m-d') === date('Y-m-d', strtotime($day->date));
                     @endphp
-                    <div class="w-12 bg-olive-100 hover:bg-olive-200 transition-all duration-300 rounded-t-xl relative group flex flex-col justify-end {{ $isToday ? '!bg-olive-600 shadow-md shadow-olive-600/10' : '' }}" style="height: {{ $percentage }}%">
+                    <div class="w-12 bg-olive-100 hover:bg-olive-200 transition-all duration-300 rounded-md relative group flex flex-col justify-end {{ $isToday ? '!bg-olive-600 shadow-md shadow-olive-600/10' : '' }}" style="height: {{ $percentage }}%">
                         <span class="absolute -top-12 left-1/2 -translate-x-1/2 bg-olive-900 text-white text-[10px] py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold whitespace-nowrap shadow-xl z-20">
                             Rp {{ number_format($day->revenue, 0, ',', '.') }}
                         </span>
@@ -182,7 +182,7 @@
     </div>
 
     {{-- Top Products / Inventory --}}
-    <div class="bg-white p-8 rounded-3xl shadow-sm border border-olive-900/5">
+    <div class="bg-white p-8 rounded-3xl border border-olive-800/20">
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-olive-800">inventory_2</span>
@@ -220,7 +220,7 @@
 {{-- Bottom Row --}}
 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
     {{-- Recent Orders Table --}}
-    <div class="lg:col-span-3 bg-white p-8 rounded-3xl shadow-sm border border-olive-900/5 overflow-x-auto">
+    <div class="lg:col-span-3 bg-white p-8 rounded-3xl border border-olive-800/20">
         <div class="flex justify-between items-center mb-8">
             <h4 class="text-lg font-bold text-olive-900 font-display">Pesanan Terbaru</h4>
             <div class="flex gap-2">
@@ -277,7 +277,7 @@
     </div>
 
     {{-- Stats gauge / occupancy --}}
-    <div class="bg-white p-8 rounded-3xl shadow-sm border border-olive-900/5 flex flex-col items-center justify-center text-center">
+    <div class="bg-white p-8 rounded-3xl border border-olive-800/20 flex flex-col items-center justify-center text-center">
         <div class="relative w-36 h-36 mb-8">
             <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
                 <circle class="text-olive-50 stroke-current" cx="50" cy="50" fill="transparent" r="42" stroke-width="8"></circle>

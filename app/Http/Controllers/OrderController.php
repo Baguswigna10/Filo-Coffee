@@ -30,6 +30,10 @@ class OrderController extends Controller
 
         $order->load(['items.product', 'items.menu']);
 
+        if (request()->expectsJson()) {
+            return response()->json(['status' => $order->status]);
+        }
+
         return view('pages.order-detail', compact('order'));
     }
 

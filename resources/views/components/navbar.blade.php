@@ -25,9 +25,9 @@
             <div class="hidden lg:flex items-center gap-0.5">
                 @foreach([
                     ['route' => 'home',              'label' => 'Home'],
-                    ['route' => 'about',             'label' => 'AboutFilo'],
+                    ['route' => 'about',             'label' => 'About Filo'],
                     ['route' => 'menu',              'label' => 'Menu'],
-                    ['route' => 'shop',              'label' => 'ShopBeans'],
+                    ['route' => 'shop',              'label' => 'Shop Beans'],
                     ['route' => 'services',          'label' => 'Services'],
                     ['route' => 'news',              'label' => 'News'],
                     ['route' => 'member',            'label' => 'Member'],

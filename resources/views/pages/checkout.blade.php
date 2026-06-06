@@ -109,8 +109,8 @@
                             </div>
 
                             {{-- Alert message status --}}
-                            <div id="delivery-alert" class="p-4 rounded-2xl flex items-center gap-3 font-bold text-xs uppercase tracking-wider text-center justify-center border transition-all">
-                                Menghitung koordinat...
+                            <div id="delivery-alert" class="p-4 rounded-2xl flex items-center gap-3 font-bold text-xs uppercase tracking-wider text-center justify-center border transition-all bg-amber-50 border-amber-200/60 text-amber-700">
+                                ⏳ Menghitung jarak pengiriman...
                             </div>
                         </div>
 
@@ -380,11 +380,13 @@
     })();
 
     // ── OpenStreetMap Location Picker Logic ──
-    const shopLat = {{ $shopLocation['latitude'] ?? -6.178306 }};
-    const shopLng = {{ $shopLocation['longitude'] ?? 106.631889 }};
-    const clientLat = -6.201234;
-    const clientLng = 106.652345;
-    const maxDeliveryDistance = 10; // km
+    const shopLat = {{ $shopLocation['latitude'] ?? -7.02730 }};
+    const shopLng = {{ $shopLocation['longitude'] ?? 107.74802 }};
+    // Default: start very close to the shop (always within delivery range)
+    const clientLat = shopLat + 0.0045;
+    const clientLng = shopLng + 0.0045;
+    const maxDeliveryDistance = 25; // km
+
     const baseFee = 8000;
     const perKmFee = 2000;
     const subtotal = {{ $subtotal }};
@@ -469,7 +471,7 @@
             badgeEl.textContent = 'Tersedia';
             badgeEl.className = 'px-3 py-1 rounded-full text-[0.62rem] font-bold uppercase tracking-widest bg-green-100 text-green-700';
             
-            alertEl.textContent = 'Location is within delivery area.';
+            alertEl.textContent = '✓ Lokasi dalam jangkauan pengiriman. Geser pin untuk menyesuaikan.';
             alertEl.className = 'p-4 rounded-2xl flex items-center gap-3 font-bold text-xs uppercase tracking-wider text-center justify-center bg-green-50 border border-green-200 text-green-700';
             
             submitBtn.disabled = false;
@@ -477,7 +479,7 @@
             submitBtn.style.cursor = 'pointer';
 
             confirmBtn.disabled = false;
-            confirmBtn.textContent = '✓ Lokasi Terkonfirmasi';
+            confirmBtn.textContent = '✓ Konfirmasi Lokasi Pengiriman';
             confirmBtn.className = 'w-full bg-[#465D48] hover:bg-[#354638] text-beige-50 font-bold py-4 rounded-xl transition-all shadow-md text-xs uppercase tracking-widest';
             
             hiddenCostInput.value = fee;
@@ -490,7 +492,7 @@
             badgeEl.textContent = 'Tidak Tersedia';
             badgeEl.className = 'px-3 py-1 rounded-full text-[0.62rem] font-bold uppercase tracking-widest bg-red-100 text-red-700';
             
-            alertEl.textContent = 'Sorry, your location is outside our delivery area.';
+            alertEl.textContent = '✗ Lokasi Anda diluar jangkauan pengiriman kami (maks. 25 km dari toko).';
             alertEl.className = 'p-4 rounded-2xl flex items-center gap-3 font-bold text-xs uppercase tracking-wider text-center justify-center bg-red-50 border border-red-200 text-red-700';
             
             submitBtn.disabled = true;
@@ -498,7 +500,7 @@
             submitBtn.style.cursor = 'not-allowed';
 
             confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Diluar Radius Pengantaran (Maks 10 km)';
+            confirmBtn.textContent = '✗ Diluar Radius Pengantaran (Maks 25 km)';
             confirmBtn.className = 'w-full bg-gray-200 border border-gray-300 text-gray-400 font-bold py-4 rounded-xl transition-all cursor-not-allowed text-xs uppercase tracking-widest text-center';
             
             hiddenCostInput.value = '';

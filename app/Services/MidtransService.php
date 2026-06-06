@@ -7,6 +7,7 @@ use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
 use Midtrans\Transaction;
+use Midtrans\CoreApi;
 
 class MidtransService
 {
@@ -84,9 +85,9 @@ class MidtransService
     }
 
     /**
-     * Generate a Midtrans Snap token for a POS (kasir) QRIS transaction.
+     * Charge POS (kasir) QRIS transaction via Midtrans Core API.
      */
-    public function generatePosQrisToken(\App\Models\PosTransaction $transaction, array $cartItems): string
+    public function chargePosQris(\App\Models\PosTransaction $transaction, array $cartItems)
     {
         $itemDetails = [];
         foreach ($cartItems as $item) {
@@ -99,6 +100,7 @@ class MidtransService
         }
 
         $params = [
+            'payment_type'        => 'qris',
             'transaction_details' => [
                 'order_id'     => $transaction->transaction_number,
                 'gross_amount' => (int) $transaction->total_price,
@@ -108,10 +110,77 @@ class MidtransService
                 'first_name' => 'Pelanggan',
                 'email'      => 'pelanggan@filocoffee.com',
             ],
-            'enabled_payments' => ['qris', 'gopay', 'shopeepay'],
+            'qris' => [
+                'acquirer' => 'gopay',
+            ],
         ];
 
-        return Snap::getSnapToken($params);
+        return CoreApi::charge($params);
+    }
+
+    /**
+     * Charge Order QRIS via Midtrans Core API.
+     */
+    public function chargeOrderQris(Order $order): string
+    {
+        $order->load(['items', 'user']);
+
+        $itemDetails = [];
+        foreach ($order->items as $item) {
+            $itemDetails[] = [
+                'id'       => ($item->menu_id ? 'MENU-' : 'PROD-') . ($item->menu_id ?? $item->product_id),
+                'price'    => (int) $item->price,
+                'quantity' => $item->quantity,
+                'name'     => mb_substr($item->product_name, 0, 50),
+            ];
+        }
+
+        if ($order->shipping_cost > 0) {
+            $itemDetails[] = [
+                'id'       => 'SHIPPING',
+                'price'    => (int) $order->shipping_cost,
+                'quantity' => 1,
+                'name'     => 'Biaya Pengiriman',
+            ];
+        }
+
+        $params = [
+            'payment_type'        => 'qris',
+            'transaction_details' => [
+                'order_id'     => $order->order_number,
+                'gross_amount' => (int) $order->total_price,
+            ],
+            'item_details'     => $itemDetails,
+            'customer_details' => [
+                'first_name' => $order->recipient_name,
+                'email'      => $order->user->email ?? 'customer@filocoffee.com',
+            ],
+            'qris' => [
+                'acquirer' => 'gopay',
+            ],
+        ];
+
+        $response = CoreApi::charge($params);
+
+        $qrCodeUrl = null;
+        $actions = is_object($response) ? ($response->actions ?? null) : ($response['actions'] ?? null);
+        if ($actions) {
+            foreach ($actions as $action) {
+                $actionName = is_object($action) ? ($action->name ?? null) : ($action['name'] ?? null);
+                $actionUrl  = is_object($action) ? ($action->url ?? null) : ($action['url'] ?? null);
+                if ($actionName === 'generate-qr-code') {
+                    $qrCodeUrl = $actionUrl;
+                    break;
+                }
+            }
+        }
+
+        if (!$qrCodeUrl) {
+            $statusMessage = is_object($response) ? ($response->status_message ?? 'Unknown error') : ($response['status_message'] ?? 'Unknown error');
+            throw new \Exception('Gagal memproses QRIS: ' . $statusMessage);
+        }
+
+        return $qrCodeUrl;
     }
 
     /**

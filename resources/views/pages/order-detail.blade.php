@@ -6,12 +6,12 @@
 {{-- ═══════════════════════════════════════
      PAGE HERO
      ═══════════════════════════════════════ --}}
-<section class="relative overflow-hidden py-16 md:py-20 bg-beige-50 border-b border-olive-900/5">
-    {{-- Decorative subtle background shapes --}}
+<section class="relative overflow-hidden py-16 md:py-20 flex items-center bg-beige-50">
+    {{-- Decorative Background --}}
     <div class="absolute inset-0 opacity-50 pointer-events-none"
          style="background-image: radial-gradient(circle at 15% 15%, #CFDAD0 0%, transparent 40%), radial-gradient(circle at 85% 85%, #E6DCCF 0%, transparent 40%)">
     </div>
-    <div class="absolute right-[-5%] top-1/4 w-[500px] h-[500px] bg-olive-200/30 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute right-[-5%] top-0 w-[500px] h-[500px] bg-olive-200/30 rounded-full blur-[140px] pointer-events-none"></div>
     <div class="absolute left-[-5%] bottom-0 w-80 h-80 bg-beige-200/50 rounded-full blur-[100px] pointer-events-none"></div>
     
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
@@ -26,13 +26,6 @@
                     <span class="badge badge-status-{{ $order->status }} !text-[0.65rem] py-1 px-3.5 uppercase tracking-wider shadow-sm">{{ $order->status }}</span>
                 </div>
                 <p class="text-olive-700/50 text-[0.65rem] font-bold uppercase tracking-widest">Dipesan pada {{ $order->created_at->format('d M Y, H:i') }} WIB</p>
-            </div>
-            
-            <div class="flex items-center gap-8 animate-fade-in-up" style="animation-delay: 0.1s">
-                <div class="text-right">
-                    <div class="text-olive-700/40 text-[0.65rem] font-bold uppercase tracking-widest mb-1.5">Total Pembayaran</div>
-                    <div class="text-olive-800 font-display font-bold text-3xl leading-none">{{ $order->formatted_total }}</div>
-                </div>
             </div>
         </div>
     </div>
@@ -50,7 +43,7 @@
             <div class="lg:col-span-8 space-y-8 reveal">
                 
                 {{-- Order Items Card --}}
-                <div class="bg-white border border-olive-900/5 rounded-[2.5rem] overflow-hidden shadow-xl shadow-olive-900/5">
+                <div class="bg-white border border-olive-800/20 rounded-[2rem] overflow-hidden">
                     <div class="px-8 py-6 border-b border-olive-900/5 bg-beige-50/30">
                         <h3 class="font-display text-xl text-olive-900 font-bold">Item Pesanan</h3>
                     </div>
@@ -154,52 +147,105 @@
                 </div>
                 @endif
 
-                {{-- Payment Action: Midtrans --}}
+                {{-- Payment Action: Midtrans QRIS --}}
                 @if($order->status === 'Pending' && $order->payment_method === 'Midtrans')
-                <div class="bg-amber-50/60 border border-amber-500/10 rounded-[2.5rem] p-8 md:p-10 shadow-xl shadow-olive-900/5" id="midtrans-section">
+                @php
+                    $hasQrisUrl = $order->midtrans_token && str_starts_with($order->midtrans_token, 'http');
+                @endphp
+                <div class="bg-white border border-olive-800/20 rounded-[2rem] p-8 md:p-10" id="midtrans-section">
                     <div class="flex items-center gap-4 mb-8">
                         <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-2xl ring-1 ring-amber-500/20">
-                            💳
+                            📱
                         </div>
                         <div>
-                            <h3 class="font-display text-2xl text-olive-900 font-bold">Selesaikan Pembayaran</h3>
-                            <p class="text-amber-800/80 text-xs font-bold uppercase tracking-widest mt-0.5">Bayar aman via Midtrans — kartu kredit, transfer, e-wallet & lainnya</p>
+                            <h3 class="font-display text-2xl text-olive-900 font-bold">Bayar Instan dengan QRIS</h3>
+                            <p class="text-amber-800/80 text-xs font-semibold tracking-widest">Scan QR Code dengan aplikasi e-wallet apapun</p>
                         </div>
                     </div>
 
-                    {{-- Payment methods icons --}}
+                    {{-- Supported wallets --}}
                     <div class="flex flex-wrap gap-3 mb-8">
-                        @foreach(['💳 Kartu Kredit', '🏦 Virtual Account', '💰 GoPay', '🔵 OVO', '🟣 Dana', '📱 ShopeePay'] as $pm)
-                        <span class="bg-white border border-olive-900/5 text-olive-850/60 text-[0.55rem] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm">{{ $pm }}</span>
+                        @foreach([asset('images/payments/gopay.webp'), asset('images/payments/dana.webp'), asset('images/payments/shopeepay.webp'), asset('images/payments/bri.webp'), asset('images/payments/bca.webp'), asset('images/payments/mandiri.webp'), asset('images/payments/bni.webp')] as $pm)
+                        <img src="{{ $pm }}" class="h-5">
                         @endforeach
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-4 items-start">
+                    {{-- Tombol Generate QR --}}
+                    <div id="qris-generate-area" class="{{ $hasQrisUrl ? 'hidden' : '' }}">
                         <button id="midtrans-pay-btn"
-                                data-order-id="{{ $order->id }}"
                                 data-pay-url="{{ route('midtrans.pay', $order) }}"
-                                data-is-production="{{ config('services.midtrans.is_production') ? 'true' : 'false' }}"
                                 class="flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-xl shadow-amber-500/10 hover:shadow-amber-500/20 hover:-translate-y-0.5 group">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                             <span>Bayar Sekarang</span>
-                            <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </button>
-
-                        <div class="flex items-center gap-2 text-olive-700/40 text-[0.6rem] font-bold uppercase tracking-widest py-4">
+                        <div class="flex items-center gap-2 text-olive-700/40 text-[0.6rem] font-bold uppercase tracking-widest mt-4">
                             <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                             <span>SSL Secured by Midtrans</span>
                         </div>
                     </div>
 
                     {{-- Loading state --}}
-                    <div id="midtrans-loading" class="hidden mt-6 flex items-center gap-3 text-amber-700/80 text-xs font-bold uppercase tracking-widest">
+                    <div id="midtrans-loading" class="hidden mt-4 flex items-center gap-3 text-amber-700/80 text-xs font-bold uppercase tracking-widest">
                         <svg class="w-5 h-5 animate-spin text-amber-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 12 0 12 12z"></path></svg>
-                        <span>Menyiapkan halaman pembayaran...</span>
+                        <span>Membuat QRIS...</span>
                     </div>
 
                     {{-- Error state --}}
-                    <div id="midtrans-error" class="hidden mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <div id="midtrans-error" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-2xl">
                         <p id="midtrans-error-msg" class="text-red-700 text-xs font-bold uppercase tracking-widest"></p>
+                    </div>
+
+                    {{-- QRIS Display Area --}}
+                    <div id="qris-display" class="{{ $hasQrisUrl ? '' : 'hidden' }} mt-6">
+                        <div class="bg-white border border-olive-800/20 rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
+                            {{-- QR Code --}}
+                            <div class="flex flex-col items-center gap-4 flex-shrink-0">
+                                <div class="bg-white p-3 border border-olive-800/20 rounded-[2rem]">
+                                    <img id="qris-image" src="{{ $hasQrisUrl ? $order->midtrans_token : '' }}" alt="QRIS Payment Code"
+                                         class="w-56 h-56 md:w-64 md:h-64 object-contain rounded-xl">
+                                </div>
+                                <div id="qris-countdown" class="flex items-center gap-2 text-amber-700 text-xs font-bold uppercase tracking-widest">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span id="countdown-text">Berlaku 15:00</span>
+
+                                </div>
+                            </div>
+
+                            {{-- Instructions --}}
+                            <div class="flex-1 space-y-5">
+                                <div>
+                                    <h4 class="font-display text-xl text-olive-900 font-bold mb-1">Cara Bayar QRIS</h4>
+                                    <p class="text-olive-700/50 text-xs font-bold uppercase tracking-widest">Total: <span class="text-olive-900 text-base font-bold">{{ $order->formatted_total }}</span></p>
+                                </div>
+                                <div class="space-y-4">
+                                    @foreach([
+                                        ['🔓', 'Buka aplikasi e-wallet Anda', 'GoPay, OVO, Dana, ShopeePay, dll.'],
+                                        ['📷', 'Pilih menu Scan / QRIS', 'Arahkan kamera ke QR Code di atas'],
+                                        ['✅', 'Konfirmasi & selesaikan pembayaran', 'Pastikan nominal sesuai tagihan'],
+                                    ] as [$icon, $title, $desc])
+                                    <div class="flex gap-4 items-start">
+                                        <div class="w-10 h-10 bg-amber-50 border border-amber-200/50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">{{ $icon }}</div>
+                                        <div>
+                                            <p class="text-olive-900 font-bold text-sm">{{ $title }}</p>
+                                            <p class="text-olive-700/50 text-xs mt-0.5">{{ $desc }}</p>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+
+                                {{-- Auto polling indicator --}}
+                                <div id="polling-status" class="flex items-center gap-2 text-olive-700/40 text-[0.6rem] font-bold uppercase tracking-widest pt-4 border-t border-olive-900/5">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    <span>Menunggu konfirmasi pembayaran otomatis...</span>
+                                </div>
+
+                                {{-- Paid success indicator (hidden) --}}
+                                <div id="payment-success" class="hidden flex items-center gap-3 text-green-700 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span class="text-xs font-bold uppercase tracking-widest">Pembayaran Berhasil! Halaman akan dimuat ulang...</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 @endif
@@ -209,7 +255,7 @@
             <div class="lg:col-span-4 space-y-8 reveal" style="transition-delay: 0.1s">
                 
                 {{-- Delivery Info Card --}}
-                <div class="bg-white border border-olive-900/5 rounded-[2.5rem] p-8 relative overflow-hidden shadow-xl shadow-olive-900/5">
+                <div class="bg-white border border-olive-800/20 rounded-[2rem] p-8 relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-24 h-24 bg-olive-200/10 rounded-full blur-2xl"></div>
                     <h3 class="font-display text-xl text-olive-900 font-bold mb-8">Informasi Pengiriman</h3>
                     
@@ -229,7 +275,7 @@
                 </div>
 
                 {{-- Summary Sidebar --}}
-                <div class="bg-white border border-olive-900/5 rounded-[2.5rem] p-8 shadow-xl shadow-olive-900/5">
+                <div class="bg-white border border-olive-800/20 rounded-[2rem] p-8 overflow-hidden">
                     <h3 class="font-display text-xl text-olive-900 font-bold mb-8">Informasi Pesanan</h3>
                     
                     <div class="space-y-4 text-xs font-bold uppercase tracking-widest">
@@ -250,7 +296,7 @@
                     </div>
 
                     <div class="mt-8">
-                         <div class="p-4 bg-olive-55 border border-olive-900/5 rounded-2xl flex items-center gap-3 group shadow-sm">
+                         <div class="p-4 bg-olive-55 border border-olive-900/5 rounded-2xl flex items-center gap-3 group">
                             <div class="w-8 h-8 rounded-lg bg-olive-100 flex items-center justify-center text-olive-850 group-hover:scale-105 transition-transform">
                                  <svg class="w-4 h-4 text-olive-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
@@ -269,54 +315,99 @@
 @if($order->status === 'Pending' && $order->payment_method === 'Midtrans')
 <script>
 (function() {
-    const isProduction = document.getElementById('midtrans-pay-btn')?.dataset.isProduction === 'true';
-    const snapJsUrl = isProduction
-        ? 'https://app.midtrans.com/snap/snap.js'
-        : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const payBtn         = document.getElementById('midtrans-pay-btn');
+    const loadingEl      = document.getElementById('midtrans-loading');
+    const errorEl        = document.getElementById('midtrans-error');
+    const errorMsgEl     = document.getElementById('midtrans-error-msg');
+    const qrisDisplay    = document.getElementById('qris-display');
+    const qrisImage      = document.getElementById('qris-image');
+    const generateArea   = document.getElementById('qris-generate-area');
+    const countdownText  = document.getElementById('countdown-text');
+    const pollingStatus  = document.getElementById('polling-status');
+    const paymentSuccess = document.getElementById('payment-success');
 
-    const payBtn      = document.getElementById('midtrans-pay-btn');
-    const loadingEl   = document.getElementById('midtrans-loading');
-    const errorEl     = document.getElementById('midtrans-error');
-    const errorMsgEl  = document.getElementById('midtrans-error-msg');
+    let countdownInterval = null;
+    let pollingInterval   = null;
 
+    // ── Helper: show error ──
     function showError(msg) {
         loadingEl.classList.add('hidden');
         errorEl.classList.remove('hidden');
         errorMsgEl.textContent = msg;
-        payBtn.disabled = false;
-        payBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        if (payBtn) {
+            payBtn.disabled = false;
+            payBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
     }
 
-    function loadSnapAndPay(clientKey, snapToken) {
-        // Load Snap.js dynamically
-        const script = document.createElement('script');
-        script.src = snapJsUrl;
-        script.setAttribute('data-client-key', clientKey);
-        script.onload = function() {
-            window.snap.pay(snapToken, {
-                onSuccess: function(result) {
-                    // Payment success — reload page to show updated status
-                    window.location.href = window.location.href + '?paid=1';
-                },
-                onPending: function(result) {
-                    window.location.reload();
-                },
-                onError: function(result) {
-                    showError('Pembayaran gagal. Silakan coba lagi.');
-                },
-                onClose: function() {
-                    payBtn.disabled = false;
-                    payBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    loadingEl.classList.add('hidden');
+    // ── Countdown timer (15 minutes) ──
+    function startCountdown(seconds) {
+        let remaining = seconds;
+        function tick() {
+            const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+            const s = (remaining % 60).toString().padStart(2, '0');
+            countdownText.textContent = `Berlaku ${m}:${s}`;
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
+                countdownText.textContent = 'QRIS Kadaluarsa';
+                countdownText.closest('#qris-countdown').classList.replace('text-amber-700', 'text-red-600');
+                stopPolling();
+            }
+            remaining--;
+        }
+        tick();
+        countdownInterval = setInterval(tick, 1000);
+    }
+
+    // ── Poll payment status ──
+    function startPolling(payUrl) {
+        // Poll every 5 seconds
+        pollingInterval = setInterval(async () => {
+            try {
+                const resp = await fetch(payUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ check_status: true }),
+                });
+                const data = await resp.json();
+
+                // If server says already paid (redirect flag)
+                if (!resp.ok && data.redirect) {
+                    stopPolling();
+                    pollingStatus.classList.add('hidden');
+                    paymentSuccess.classList.remove('hidden');
+                    setTimeout(() => window.location.reload(), 2000);
                 }
-            });
-        };
-        script.onerror = function() {
-            showError('Gagal memuat halaman pembayaran. Periksa koneksi internet Anda.');
-        };
-        document.head.appendChild(script);
+            } catch (e) {
+                // Ignore polling errors silently
+            }
+        }, 5000);
     }
 
+    function stopPolling() {
+        if (pollingInterval) clearInterval(pollingInterval);
+    }
+
+    // ── Show QRIS UI ──
+    function showQris(qrCodeUrl) {
+        // Hide generate button, show QR
+        generateArea.classList.add('hidden');
+        loadingEl.classList.add('hidden');
+        qrisImage.src = qrCodeUrl;
+        qrisDisplay.classList.remove('hidden');
+
+        // Start 15-minute countdown
+        startCountdown(15 * 60);
+
+        // Start polling for payment status
+        if (payBtn) startPolling(payBtn.dataset.payUrl);
+    }
+
+    // ── Button click: generate QRIS ──
     if (payBtn) {
         payBtn.addEventListener('click', async function() {
             payBtn.disabled = true;
@@ -345,12 +436,33 @@
                     throw new Error(data.error || 'Terjadi kesalahan.');
                 }
 
-                loadSnapAndPay(data.client_key, data.snap_token);
+                if (data.qr_code_url) {
+                    showQris(data.qr_code_url);
+                } else {
+                    throw new Error('QRIS tidak tersedia. Silakan coba lagi.');
+                }
 
             } catch (err) {
                 showError(err.message || 'Gagal menghubungi server. Coba lagi.');
             }
         });
+    }
+
+    // Auto-load countdown/polling if QRIS URL already loaded on page load
+    const hasQrisUrl = {{ $hasQrisUrl ? 'true' : 'false' }};
+    if (hasQrisUrl) {
+        const createdAt = new Date("{{ $order->created_at->toIso8601String() }}");
+        const now = new Date();
+        const diffSeconds = Math.floor((now - createdAt) / 1000);
+        const remainingSeconds = Math.max(0, 15 * 60 - diffSeconds);
+        
+        if (remainingSeconds > 0) {
+            startCountdown(remainingSeconds);
+            if (payBtn) startPolling(payBtn.dataset.payUrl);
+        } else {
+            countdownText.textContent = 'QRIS Kadaluarsa';
+            countdownText.closest('#qris-countdown').classList.replace('text-amber-700', 'text-red-600');
+        }
     }
 })();
 </script>

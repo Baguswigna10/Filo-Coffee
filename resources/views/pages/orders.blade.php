@@ -34,12 +34,15 @@
 {{-- ═══════════════════════════════════════
      ORDERS LIST SECTION
      ═══════════════════════════════════════ --}}
-<section class="py-20 bg-beige-50 relative overflow-hidden">
-    {{-- Background decorative blobs --}}
-    <div class="absolute left-0 top-1/4 w-[500px] h-[500px] bg-olive-100/20 rounded-full blur-[120px] -translate-x-1/2 pointer-events-none"></div>
-    <div class="absolute right-0 bottom-0 w-[400px] h-[400px] bg-olive-100/10 rounded-full blur-[100px] translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+<section class="relative overflow-hidden min-h-[50vh] flex items-center bg-beige-50">
+    {{-- Decorative Background --}}
+    <div class="absolute inset-0 opacity-50 pointer-events-none"
+         style="background-image: radial-gradient(circle at 15% 15%, #CFDAD0 0%, transparent 40%), radial-gradient(circle at 85% 85%, #E6DCCF 0%, transparent 40%)">
+    </div>
+    <div class="absolute right-[-5%] top-0 w-[500px] h-[500px] bg-olive-200/30 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute left-[-5%] bottom-0 w-80 h-80 bg-beige-200/50 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 z-10">
         @if($orders->isEmpty())
         {{-- Empty State --}}
         <div class="max-w-xl mx-auto text-center py-20 reveal">

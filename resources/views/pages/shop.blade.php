@@ -51,14 +51,14 @@
             <a href="{{ route('shop') }}"
                class="px-6 py-3 rounded-2xl text-[0.65rem] font-bold uppercase tracking-wider transition-all duration-300 {{ $roast === 'all'
                    ? 'bg-olive-800 text-beige-50 shadow-md shadow-olive-900/10'
-                   : 'bg-beige-100 border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
+                   : 'bg-white border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
                 Semua Roast
             </a>
             @foreach($roasts as $r)
             <a href="{{ route('shop', ['roast' => $r]) }}"
                class="px-6 py-3 rounded-2xl text-[0.65rem] font-bold uppercase tracking-wider transition-all duration-300 {{ $roast === $r
                    ? 'bg-olive-800 text-beige-50 shadow-md shadow-olive-900/10'
-                   : 'bg-beige-100 border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
+                   : 'bg-white border border-beige-200 text-olive-800 hover:text-olive-950 hover:bg-beige-250' }}">
                 {{ $r }}
             </a>
             @endforeach
@@ -116,7 +116,7 @@
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="quantity" value="1">
                             <button type="submit" title="Tambah ke Keranjang"
-                                    class="w-9 h-9 rounded-full bg-olive-500 hover:bg-olive-800 hover:text-beige-50 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm active:scale-95">
+                                    class="w-9 h-9 rounded-full bg-olive-500 hover:bg-olive-800 hover:text-beige-50 text-beige-50 flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm active:scale-95">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
@@ -146,7 +146,7 @@
             {{-- Middle Image with Price & Roast Badge --}}
             <div class="relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-olive-950/40 border border-white/5 shadow-inner z-20">
                 @if($product->image)
-                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover transform duration-1000 group-hover:scale-105">
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover transform duration-500 group-hover:scale-105">
                 @else
                     <div class="w-full h-full flex items-center justify-center opacity-20 text-6xl bg-olive-950/20">🫘</div>
                 @endif

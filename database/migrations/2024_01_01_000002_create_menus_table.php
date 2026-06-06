@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('category', ['Coffee', 'Non-Coffee', 'Food', 'Dessert', 'Seasonal'])->default('Coffee');
+            $table->enum('category', ['Coffee', 'Non-Coffee', 'Manual Brew', 'Signature'])->default('Coffee');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->string('image')->nullable();

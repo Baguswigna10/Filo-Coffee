@@ -103,15 +103,33 @@ class PosController extends Controller
                 ]);
             }
 
-            // Generate Midtrans Snap token
-            $snapToken = $this->midtransService->generatePosQrisToken($transaction, $request->cart);
-            $transaction->update(['midtrans_token' => $snapToken]);
+            // Charge QRIS via Midtrans Core API
+            $response = $this->midtransService->chargePosQris($transaction, $request->cart);
+            
+            $qrCodeUrl = null;
+            $actions = is_object($response) ? ($response->actions ?? null) : ($response['actions'] ?? null);
+            if ($actions) {
+                foreach ($actions as $action) {
+                    $actionName = is_object($action) ? ($action->name ?? null) : ($action['name'] ?? null);
+                    $actionUrl  = is_object($action) ? ($action->url ?? null) : ($action['url'] ?? null);
+                    if ($actionName === 'generate-qr-code') {
+                        $qrCodeUrl = $actionUrl;
+                        break;
+                    }
+                }
+            }
+
+            if (!$qrCodeUrl) {
+                $statusMessage = is_object($response) ? ($response->status_message ?? 'Unknown error') : ($response['status_message'] ?? 'Unknown error');
+                throw new \Exception('Gagal memproses QRIS: ' . $statusMessage);
+            }
+
+            $transaction->update(['midtrans_token' => $qrCodeUrl]);
 
             DB::commit();
             return response()->json([
                 'success'            => true,
-                'snap_token'         => $snapToken,
-                'client_key'         => config('services.midtrans.client_key'),
+                'qr_code_url'        => $qrCodeUrl,
                 'transaction_number' => $transaction->transaction_number,
                 'transaction_id'     => $transaction->id,
             ]);
@@ -152,7 +170,12 @@ class PosController extends Controller
         $transactions = PosTransaction::with(['items', 'user'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
-        return view('pos.history', compact('transactions'));
+
+        $totalCount    = PosTransaction::count();
+        $totalRevenue  = PosTransaction::sum('total_price');
+        $todayCount    = PosTransaction::whereDate('created_at', today())->count();
+
+        return view('pos.history', compact('transactions', 'totalCount', 'totalRevenue', 'todayCount'));
     }
 
     public function show($id)

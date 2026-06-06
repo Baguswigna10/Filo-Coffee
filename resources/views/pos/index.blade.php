@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Kasir Mode — Filo Coffee</title>
+    <title>Kasir Mode - Filo Coffee</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -240,8 +240,8 @@
         <div class="flex items-center gap-5">
             <img src="{{ asset('images/logo.png') }}" alt="Filo Coffee" class="h-9 w-auto" onerror="this.style.display='none'">
             <div>
-                <h1 class="font-display text-base text-olive font-bold leading-none tracking-tight">KASIR MODE</h1>
-                <p class="text-stone text-[0.6rem] uppercase tracking-[0.18em] font-semibold mt-0.5">Point of Sale System</p>
+                <h1 class="font-display text-base text-olive font-bold leading-none tracking-tight">Kasir</h1>
+                <p class="text-stone text-[0.6rem] uppercase tracking-[0.18em] font-semibold mt-0.5">Filo Coffee</p>
             </div>
             <span class="ml-2 flex items-center gap-2 px-3 py-1 rounded-full text-[0.62rem] font-bold uppercase tracking-widest bg-olive/8 text-olive border border-olive/20">
                 <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full pulse-dot shadow-[0_0_6px_rgba(16,185,129,0.5)]"></span>
@@ -275,9 +275,9 @@
         {{-- ── LEFT: Menu Panel ── --}}
         <div class="flex-1 flex flex-col overflow-hidden bg-cream">
             {{-- Category Filter --}}
-            <div class="flex-shrink-0 px-6 pt-4 pb-4 bg-white border-b border-beige">
+            <div class="flex-shrink-0 px-6 pt-4 pb-4 bg-white border border-olive-800/20">
                 <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none" style="-ms-overflow-style:none; scrollbar-width:none;">
-                    <button class="cat-btn active" data-category="all">Semua</button>
+                    <button class="cat-btn active" data-category="all">Semua Menu</button>
                     @php $categories = $menus->pluck('category')->unique(); @endphp
                     @foreach($categories as $category)
                     <button class="cat-btn" data-category="{{ $category }}">{{ $category }}</button>
@@ -301,12 +301,12 @@
                                 </div>
                             </div>
                             <div class="absolute top-2.5 right-2.5">
-                                <span class="px-2 py-0.5 bg-white/80 backdrop-blur-sm rounded-md text-[0.58rem] font-bold text-stone border border-beige uppercase tracking-widest">{{ $menu->category }}</span>
+                                <span class="px-2 py-0.5 bg-white/80 backdrop-blur-sm rounded-md text-[0.58rem] font-bold text-olive-900 border border-olive-900 uppercase tracking-widest">{{ $menu->category }}</span>
                             </div>
                         </div>
-                        <div class="p-3.5 border-t border-beige">
-                            <h3 class="font-display text-ink text-xs font-bold leading-snug truncate mb-1 group-hover:text-olive transition-colors">{{ $menu->name }}</h3>
-                            <p class="text-mocca text-xs font-bold tracking-tight">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
+                        <div class="p-3.5 border-t border-olive">
+                            <h3 class="font-display text-olive-900 text-xs font-bold leading-snug truncate mb-1 group-hover:text-olive transition-colors">{{ $menu->name }}</h3>
+                            <p class="text-olive-900 text-xs font-bold tracking-tight">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -489,10 +489,14 @@
 
         {{-- Waiting State --}}
         <div id="qris-waiting" class="hidden py-5 text-center space-y-4">
-            <div class="p-4 rounded-xl bg-violet-50 border border-violet-200">
-                <div class="text-4xl mb-3">📱</div>
-                <p class="text-ink text-sm font-bold mb-1">Scan QR di popup Midtrans</p>
-                <p class="text-stone text-xs leading-relaxed">Popup QRIS telah dibuka. Minta pelanggan untuk scan QR tersebut. Setelah bayar, sistem akan otomatis konfirmasi.</p>
+            <!-- QRIS Image container -->
+            <div class="relative mx-auto w-64 h-64 bg-white p-3 border border-violet-100 rounded-2xl shadow-inner flex items-center justify-center">
+                <img id="qris-image-element" src="" alt="QRIS Code" class="w-full h-full object-contain">
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-violet-50/50 border border-violet-100">
+                <p class="text-ink text-xs font-bold mb-1">Pindai Kode QR di Atas</p>
+                <p class="text-stone text-[0.68rem] leading-relaxed">Tunjukkan kode QR kepada pelanggan untuk discan menggunakan GoPay, OVO, Dana, LinkAja, atau Mobile Banking.</p>
             </div>
 
             {{-- Polling Status --}}
@@ -532,11 +536,7 @@
     </div>
 </div>
 
-{{-- Hidden Snap container --}}
-<div id="snap-qris-container"></div>
 
-<script src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
-        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
 
 <script>
     let cart = [];
@@ -775,30 +775,15 @@
                 items: [...cart]
             };
 
+            // Set QR code image source
+            document.getElementById('qris-image-element').src = result.qr_code_url;
+
             // Switch to waiting state
             document.getElementById('qris-loading').classList.add('hidden');
             document.getElementById('qris-waiting').classList.remove('hidden');
 
-            // Open Snap QRIS popup
-            snap.pay(result.snap_token, {
-                onSuccess: function(payResult) {
-                    clearQrisPolling();
-                    showQrisSuccess(currentQrisTxNumber);
-                },
-                onPending: function(payResult) {
-                    startQrisPolling();
-                },
-                onError: function(payResult) {
-                    clearQrisPolling();
-                    document.getElementById('qris-modal').classList.add('hidden');
-                    alert('Pembayaran QRIS gagal atau dibatalkan.');
-                    qrisBtn.disabled = false;
-                    qrisBtn.textContent = 'Generate QRIS & Bayar';
-                },
-                onClose: function() {
-                    startQrisPolling();
-                }
-            });
+            // Start checking status in background
+            startQrisPolling();
 
         } catch (err) {
             alert('Terjadi kesalahan koneksi.');

@@ -57,7 +57,7 @@ class MidtransController extends Controller
      * Route: POST /midtrans/pay/{order}
      * Used when user revisits order-detail and wants to trigger payment popup.
      */
-    public function pay(Order $order)
+    public function pay(Request $request, Order $order)
     {
         if ($order->user_id !== auth()->id()) {
             abort(403);
@@ -70,34 +70,44 @@ class MidtransController extends Controller
             Log::warning('Midtrans sync status on pay error: ' . $e->getMessage());
         }
 
-        // If status has updated to Paid, prevent token creation and trigger frontend redirect
-        if ($order->fresh()->status === 'Paid') {
+        $freshOrder = $order->fresh();
+
+        // If status has updated to Paid, trigger frontend redirect
+        if ($freshOrder->status === 'Paid') {
             return response()->json([
-                'error' => 'Pesanan ini sudah berhasil dibayar! Halaman akan dimuat ulang.',
-                'redirect' => true
+                'error'    => 'Pesanan ini sudah berhasil dibayar! Halaman akan dimuat ulang.',
+                'redirect' => true,
             ], 422);
         }
 
-        if ($order->status !== 'Pending' || $order->payment_method !== 'Midtrans') {
+        if ($freshOrder->status !== 'Pending' || $freshOrder->payment_method !== 'Midtrans') {
             return response()->json(['error' => 'Order tidak valid untuk pembayaran Midtrans.'], 422);
         }
 
+        // If frontend is just polling status (QRIS already shown), skip re-generation
+        $checkOnly = $request->boolean('check_status');
+        if ($checkOnly) {
+            // If already have a QR URL, just return it (or nothing if only checking)
+            if ($freshOrder->midtrans_token && str_starts_with($freshOrder->midtrans_token, 'http')) {
+                return response()->json(['qr_code_url' => $freshOrder->midtrans_token]);
+            }
+            return response()->json(['qr_code_url' => null]);
+        }
+
         try {
-            // Reuse existing token if present, otherwise generate a new one
-            $snapToken = $order->midtrans_token;
-            if (!$snapToken) {
-                $snapToken = $this->midtransService->generateSnapToken($order);
-                $order->update(['midtrans_token' => $snapToken]);
+            // Reuse existing QRIS URL if present (must start with http/https), otherwise generate a new one
+            $qrCodeUrl = $freshOrder->midtrans_token;
+            if (!$qrCodeUrl || !str_starts_with($qrCodeUrl, 'http')) {
+                $qrCodeUrl = $this->midtransService->chargeOrderQris($freshOrder);
+                $freshOrder->update(['midtrans_token' => $qrCodeUrl]);
             }
 
             return response()->json([
-                'snap_token' => $snapToken,
-                'client_key' => config('services.midtrans.client_key'),
-                'is_production' => config('services.midtrans.is_production'),
+                'qr_code_url' => $qrCodeUrl,
             ]);
         } catch (\Exception $e) {
             Log::error('Midtrans pay error: ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal membuat token pembayaran: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Gagal membuat QRIS pembayaran: ' . $e->getMessage()], 500);
         }
     }
 }

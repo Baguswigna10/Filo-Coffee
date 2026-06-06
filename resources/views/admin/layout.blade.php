@@ -108,7 +108,16 @@
     <style>
         body { font-family: 'Poppins', system-ui, sans-serif; background-color: #FAF8F5; }
         .font-display { font-family: 'Source Serif Pro', Georgia, serif; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; text-transform: none !important; }
+        
+        /* ── Admin Card Styling ── */
+        .admin-card {
+            background-color: #ffffff;
+            border: 1px solid rgba(35, 47, 36, 0.12); /* olive-800/12 */
+            border-radius: 1.5rem; /* rounded-3xl */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         
         /* ── Mocca Custom Scrollbar ── */
         ::-webkit-scrollbar { width: 6px; }
@@ -121,7 +130,7 @@
             width: 100%;
             background: #ffffff;
             border: 1.5px solid rgba(70, 93, 72, 0.15); /* olive-700 translucent */
-            border-radius: 0.875rem;
+            border-radius: 0.875rem !important;
             padding: 0.625rem 1rem;
             color: #151C15;
             font-size: 0.875rem;
@@ -341,7 +350,7 @@
 
             <a class="{{ request()->routeIs('admin.pos.*') ? 'bg-olive-50 border-r-4 border-olive-600 text-olive-800 font-semibold' : 'text-olive-900/50 hover:bg-olive-50/50 hover:text-olive-900' }} px-8 py-4 flex items-center gap-4 transition-all duration-300" href="{{ route('admin.pos.index') }}">
                 <span class="material-symbols-outlined">point_of_sale</span>
-                <span class="text-sm font-medium">Kasir Mode (POS)</span>
+                <span class="text-sm font-medium">Kasir Mode</span>
             </a>
         </nav>
 

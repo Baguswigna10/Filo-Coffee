@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="../images/logo1.png" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -90,6 +91,7 @@
             overflow-x: hidden;
         }
         .font-display { font-family: 'Source Serif Pro', Georgia, serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; display: inline-block; line-height: 1; text-transform: none !important; }
 
         /* ── Premium Buttons ── */
         .btn-mocca {
@@ -180,7 +182,7 @@
             width: 100%;
             background: rgba(42, 37, 32, 0.6);
             border: 1.5px solid rgba(201, 168, 124, 0.12);
-            border-radius: 0.875rem;
+            border-radius: 0.875rem !important;
             padding: 0.8rem 1.1rem;
             color: #F5F0EB;
             font-size: 0.9375rem;
