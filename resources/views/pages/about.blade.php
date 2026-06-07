@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Tentang Filo Coffee | Modern Specialty Roasters')
+@section('title', 'Tentang Filo Coffee | Specialty Roasters')
 @section('meta_description', 'Kisah dedikasi Filo Coffee dalam menghadirkan kemewahan cita rasa biji kopi Nusantara dan kehangatan ruang temu modern.')
 
 @section('content')
@@ -18,14 +18,14 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 z-10">
         <div class="inline-flex items-center gap-3 mb-6 animate-fade-in-up">
             <span class="w-8 h-[1.5px] bg-olive-500"></span>
-            <span class="text-olive-700 text-xs font-bold tracking-[0.25em] uppercase">Warisan Dedikasi</span>
+            <span class="text-olive-700 text-xs font-bold tracking-[0.25em] uppercase">Kesederhanaan dalam rasa</span>
         </div>
         <h1 class="font-display text-5xl md:text-7xl text-olive-900 font-bold leading-[1.05] mb-8 animate-fade-in-up">
             Lebih dari Sekadar<br>
             <span class="text-beige-600 italic font-semibold font-display">Secangkir Kopi.</span>
         </h1>
         <p class="text-olive-800/80 text-lg md:text-xl leading-relaxed max-w-2xl animate-fade-in-up" style="animation-delay: 0.1s">
-            Filo Coffee lahir dari kecintaan mendalam terhadap kekayaan alam Indonesia, berakar dari komitmen untuk menyajikan cita rasa biji kopi sangrai terbaik dan ruang temu yang bermakna bagi setiap patron kami.
+            Filo Coffee hadir sebagai tempat sederhana untuk menikmati secangkir kopi dan menghabiskan waktu bersama orang-orang terdekat.
         </p>
     </div>
 </section>
@@ -43,30 +43,15 @@
                     <span class="text-olive-600 text-xs font-bold uppercase tracking-[0.2em]">Kisah Kami</span>
                 </div>
                 <h2 class="font-display text-4xl md:text-5xl text-olive-900 font-bold mb-6">
-                    Menjaga Kemurnian Rasa Dari Kebun Nusantara.
+                    Tempat Kami Mungkin Tidak Besar
                 </h2>
                 <div class="space-y-6 text-olive-800/70 text-base leading-relaxed">
                     <p>
-                        Sejak pintu pertama kami dibuka, kami berdedikasi melacak asal-usul biji kopi terbaik Nusantara secara langsung dari tangan para petani berdedikasi tinggi — mulai dari aroma floral basah khas pegunungan Aceh Gayo hingga kompleksitas rasa manis cokelat bumi Flores.
+                        Tidak mewah, dan tidak penuh gemerlap, tapi justru dari kesederhanaan itulah tercipta suasana yang hangat dan nyaman. Di sini, kopi bukan sekadar minuman. Ada banyak cerita yang lahir dari obrolan santai, tawa bersama teman, diskusi panjang, hingga momen-momen kecil yang berkesan. Kami senang melihat pelanggan datang bukan hanya untuk menikmati kopi, tetapi juga karena merasa seperti berada di tempat yang akrab dan penuh kehangatan.
                     </p>
                     <p>
-                        Setiap lot biji kopi disortir dengan ketat dan dipanggang secara presisi di fasilitas *roastery* internal kami, demi memastikan keunikan profil rasa yang jujur, seimbang, dan konsisten menemani ritual pagi Anda.
+                        Bagi kami, yang membuat sebuah coffee shop istimewa bukan hanya rasa kopinya, melainkan orang-orang di dalamnya. Karena itu, kami selalu berusaha menjaga suasana yang ramah dan kekeluargaan agar setiap orang yang datang bisa merasa diterima dan nyaman.
                     </p>
-                </div>
-
-                {{-- Stats grid --}}
-                <div class="grid grid-cols-2 gap-8 mt-12 pt-10 border-t border-olive-900/10">
-                    @foreach([
-                        ['value' => '2019', 'label' => 'Tahun Berdiri'],
-                        ['value' => '12+', 'label' => 'Mitra Tani Lokal'],
-                        ['value' => '85+', 'label' => 'Skor Cupping Min.'],
-                        ['value' => '4.9★', 'label' => 'Ulasan Penikmat Kopi'],
-                    ] as $stat)
-                    <div>
-                        <div class="font-display text-3xl font-bold text-olive-900">{{ $stat['value'] }}</div>
-                        <div class="text-olive-500 text-[0.65rem] mt-2 font-bold uppercase tracking-wider">{{ $stat['label'] }}</div>
-                    </div>
-                    @endforeach
                 </div>
             </div>
 
@@ -93,10 +78,10 @@
         <div class="text-center max-w-2xl mx-auto mb-24 reveal">
             <div class="inline-flex items-center gap-2 mb-4">
                 <span class="w-5 h-[1px] bg-olive-500"></span>
-                <span class="text-olive-600 text-xs font-bold uppercase tracking-[0.2em]">Tonggak Sejarah</span>
+                <span class="text-olive-600 text-xs font-bold uppercase tracking-[0.2em]">Sejarah Filo</span>
                 <span class="w-5 h-[1px] bg-olive-500"></span>
             </div>
-            <h2 class="font-display text-4xl md:text-5xl text-olive-900 font-bold">Langkah Perjalanan Kami</h2>
+            <h2 class="font-display text-4xl md:text-5xl text-olive-900 font-bold">Langkah Perjalanan Filo</h2>
         </div>
 
         <div class="relative">
@@ -106,10 +91,42 @@
             <div class="space-y-20">
                 @php
                 $timeline = [
-                    ['year' => '2019', 'title' => 'Pertama Kali Berdiri', 'desc' => 'Filo resmi membuka bar espresso pertamanya di kawasan Jakarta Selatan dengan visi mengangkat cita rasa biji kopi single origin pegunungan Nusantara.', 'side' => 'left'],
-                    ['year' => '2020', 'title' => 'Roastery & Lab Mandiri', 'desc' => 'Guna mengontrol kualitas rasa secara mutlak, kami meluncurkan mesin sangrai premium kami sendiri serta laboratorium cupping bersertifikasi.', 'side' => 'right'],
-                    ['year' => '2022', 'title' => 'VIP Lounge & PlayStation Suite', 'desc' => 'Menghadirkan kenyamanan maksimal dengan meluncurkan bilik gaming PlayStation 5 ber-AC kedap suara serta ruang kerja tenang yang cozy.', 'side' => 'left'],
-                    ['year' => '2024', 'title' => 'Reservasi Instan & Filo Privilege', 'desc' => 'Mentransformasikan operasional layanan dengan reservasi meja dinamis, booking slot gaming online, serta program loyalitas Filo Club.', 'side' => 'right'],
+                    [
+                        'year' => '2022',
+                        'title' => 'Awal Perjalanan',
+                        'desc' => 'Menjadi titik awal berdirinya coffee shop kami. Berawal dari tempat sederhana dengan semangat menghadirkan kopi berkualitas dan suasana hangat yang dapat dinikmati semua kalangan.',
+                        'side' => 'left'
+                    ],
+                    [
+                        'year' => '2023',
+                        'title' => 'Membangun Relasi Komunitas',
+                        'desc' => 'Mulai aktif menjalin hubungan dan berkolaborasi dengan berbagai komunitas coffee shop di Majalaya. Dari sini lahir banyak ide, pengalaman, dan persahabatan baru yang membantu kami terus berkembang.',
+                        'side' => 'right'
+                    ],
+                    [
+                        'year' => '2024',
+                        'title' => 'Roastery Mandiri',
+                        'desc' => 'Membangun fasilitas roastery sendiri sebagai langkah untuk menjaga kualitas dan konsistensi rasa kopi yang kami sajikan kepada pelanggan setiap harinya.',
+                        'side' => 'left'
+                    ],
+                    [
+                        'year' => '2025',
+                        'title' => 'Fasilitas PlayStation',
+                        'desc' => 'Menambahkan area bermain PlayStation agar pelanggan dapat menikmati waktu bersantai yang lebih seru bersama teman dan keluarga sambil menikmati kopi favorit mereka.',
+                        'side' => 'right'
+                    ],
+                    [
+                        'year' => '2026',
+                        'title' => 'Pengembangan Kopi Sachet',
+                        'desc' => 'Mulai merancang produk kopi sachet agar cita rasa khas coffee shop kami dapat dinikmati kapan saja dan di mana saja oleh lebih banyak pecinta kopi.',
+                        'side' => 'left'
+                    ],
+                    [
+                        'year' => '2027',
+                        'title' => 'Coming Soon: Private & Meeting Room',
+                        'desc' => 'Merencanakan pembangunan private room dan meeting room yang nyaman untuk kebutuhan diskusi, rapat, maupun acara komunitas dalam suasana yang lebih eksklusif.',
+                        'side' => 'right'
+                    ],
                 ];
                 @endphp
 

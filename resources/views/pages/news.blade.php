@@ -47,62 +47,12 @@
 </section>
 
 {{-- ═══════════════════════════════════════
-     2. FEATURED POST
+     4. LATEST ARTICLES GRID
      ═══════════════════════════════════════ --}}
-@if($featuredPost)
-<section class="bg-white py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-beige-50 border border-beige-200 rounded-[2rem] overflow-hidden  tracking-wider hover:border-olive-500 hover:bg-olive-50 hover:text-olive-900 transition-all duration-300 reveal group">
-            <div class="grid lg:grid-cols-2">
-                {{-- Image --}}
-                <div class="aspect-video lg:aspect-auto overflow-hidden relative">
-                    <img src="{{ $featuredPost['image'] }}" alt="{{ $featuredPost['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 min-h-[300px]">
-                    <div class="absolute inset-0 bg-gradient-to-r from-beige-50/30 via-transparent to-transparent lg:block hidden"></div>
-                    {{-- Featured Badge --}}
-                    <div class="absolute top-6 left-6">
-                        <span class="bg-olive-800 text-beige-50 text-[0.6rem] font-bold px-4 py-2 rounded-full uppercase tracking-[0.2em] shadow-lg">✦ Featured Story</span>
-                    </div>
-                </div>
-                {{-- Content --}}
-                <div class="p-10 md:p-14 flex flex-col justify-center">
-                    <div class="flex items-center gap-4 mb-6">
-                        <span class="bg-olive-100 text-olive-700 border border-olive-200 text-[0.65rem] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">{{ $featuredPost['category'] }}</span>
-                        <span class="text-olive-400 text-[0.65rem] font-bold uppercase tracking-widest">{{ $featuredPost['date'] }}</span>
-                    </div>
-                    <h2 class="font-display text-3xl md:text-4xl text-olive-900 font-bold mb-6 leading-tight group-hover:text-olive-700 transition-colors">
-                        <a href="{{ route('news.show', $featuredPost['slug']) }}">{{ $featuredPost['title'] }}</a>
-                    </h2>
-                    <p class="text-olive-700/70 text-base leading-relaxed mb-10 line-clamp-3">
-                        {{ $featuredPost['excerpt'] }}
-                    </p>
-                    <div class="flex items-center justify-between mt-auto pt-8 border-t border-beige-200">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-olive-100 border border-olive-200 flex items-center justify-center text-olive-700 font-bold text-sm">
-                                {{ substr($featuredPost['author'], 0, 1) }}
-                            </div>
-                            <div>
-                                <p class="text-olive-900 text-sm font-bold">{{ $featuredPost['author'] }}</p>
-                                <p class="text-olive-400 text-[0.65rem]">{{ $featuredPost['read_time'] }}</p>
-                            </div>
-                        </div>
-                        <a href="{{ route('news.show', $featuredPost['slug']) }}" class="border-2 border-olive-800 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-6 py-3 rounded-xl font-bold transition-all duration-300 inline-flex items-center gap-2 text-sm group/btn">
-                            Read Story
-                            <svg class="w-4 h-4 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-@endif
 
-{{-- ═══════════════════════════════════════
-     3. TRENDING TOPICS
-     ═══════════════════════════════════════ --}}
-<section class="bg-white border-b border-beige-200 pb-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-5 overflow-x-auto no-scrollbar">
+<section class="py-20 bg-beige-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <div class="flex items-center gap-5 overflow-x-auto no-scrollbar pb-5">
             <span class="text-olive-500 text-[0.65rem] font-bold uppercase tracking-[0.25em] whitespace-nowrap">Trending:</span>
             @foreach($trendingTags as $tag)
             <a href="#" class="px-5 py-2.5 rounded-full bg-beige-50 border border-beige-200 text-olive-700 text-[0.65rem] font-bold uppercase tracking-wider hover:border-olive-500 hover:bg-olive-50 hover:text-olive-900 transition-all whitespace-nowrap">
@@ -111,20 +61,16 @@
             @endforeach
         </div>
     </div>
-</section>
-
-{{-- ═══════════════════════════════════════
-     4. LATEST ARTICLES GRID
-     ═══════════════════════════════════════ --}}
-<section class="py-24 bg-beige-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-end mb-14 reveal">
-            <div>
-                <span class="text-olive-600 text-xs font-bold uppercase tracking-[0.25em] block mb-2">Journal Updates</span>
-                <h2 class="font-display text-4xl md:text-5xl text-olive-900 font-bold">Artikel Terbaru</h2>
+            <div class="inline-flex items-center gap-3 mb-4">
+                <span class="w-8 h-[1.5px] bg-olive-500"></span>
+                <span class="text-olive-700 text-xs font-bold tracking-[0.25em] uppercase">Artikel Terbaru</span>
             </div>
-        </div>
-
+            <h2 class="font-display text-4xl md:text-5xl text-olive-900 font-bold leading-[1.05] mb-16">
+                Coffee News
+                <span class="text-beige-600 italic font-semibold">Journal.</span>
+            </h2>
+            
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($latestPosts as $i => $post)
             <article class="group bg-white border border-beige-200 rounded-3xl overflow-hidden hover:border-olive-300 hover:shadow-xl hover:shadow-olive-900/8 transition-all duration-200 reveal" style="transition-delay: {{ ($i % 9) * 0.07 }}s">
@@ -148,7 +94,7 @@
                     <p class="text-olive-600/80 text-sm leading-relaxed mb-6 line-clamp-2">
                         {{ $post['excerpt'] }}
                     </p>
-                    <a href="{{ route('news.show', $post['slug']) }}" class="text-olive-800 text-[0.65rem] font-bold uppercase tracking-[0.2em] inline-flex items-center gap-2 group/btn hover:text-olive-600 transition-colors">
+                    <a href="{{ route('news.show', $post['slug']) }}" class="text-olive-800 text-[0.70rem] font-bold tracking-[0.2em] inline-flex items-center group/btn hover:text-olive-600 transition-colors">
                         <span>Baca Selengkapnya</span>
                         <span class="w-6 h-px bg-olive-400 group-hover/btn:w-10 transition-all duration-300"></span>
                     </a>
@@ -158,7 +104,7 @@
         </div>
 
         <div class="text-center mt-16 reveal">
-            <button class="border-2 border-olive-800 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-10 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:-translate-y-0.5 inline-flex items-center gap-2">
+            <button class="border border-olive-800/30 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-8 py-3 rounded-2xl font-bold transition-all duration-300 inline-flex items-center gap-2">
                 <span>Muat Lebih Banyak</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>

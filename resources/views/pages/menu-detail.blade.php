@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $menu->name . ' | Menu Spesial Filo Coffee')
+@section('title', $menu->name . ' | Filo Coffee')
 @section('meta_description', $menu->description ?: 'Nikmati ' . $menu->name . ', menu racikan barista premium kami dengan bahan pilihan berkualitas tinggi.')
 
 @section('content')
@@ -75,14 +75,13 @@
                                 {{-- Buttons Group --}}
                                 <div class="flex flex-row gap-3 flex-1">
                                     {{-- Add to Cart Button --}}
-                                    <button type="submit" name="redirect_to" value="" class="h-14 flex-1 border border-olive-800 text-olive-800 hover:bg-olive-50/50 font-bold rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 group text-xs sm:text-sm active:scale-98">
-                                        <span class="material-symbols-outlined text-lg">shopping_bag</span>
+                                    <button type="submit" name="redirect_to" value="" class="border border-olive-800/30 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-8 py-3 rounded-2xl font-bold transition-all duration-300 inline-flex items-center gap-2">
+                                        <span class="material-symbols-outlined">shopping_bag</span>
                                         <span>+ Keranjang</span>
                                     </button>
 
                                     {{-- Buy Now Button --}}
                                     <button type="submit" name="redirect_to" value="checkout" class="h-14 flex-1 bg-olive-800 text-beige-50 hover:bg-olive-900 font-bold rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-olive-900/10 group text-xs sm:text-sm active:scale-98">
-                                        <span class="material-symbols-outlined text-lg fill-1" style="font-variation-settings: 'FILL' 1;">bolt</span>
                                         <span>Beli Langsung</span>
                                     </button>
                                 </div>
