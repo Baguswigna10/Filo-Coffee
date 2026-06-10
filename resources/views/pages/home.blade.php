@@ -23,13 +23,13 @@
             {{-- Elegant Tagline --}}
             <div class="inline-flex items-center gap-3 mb-6">
                 <span class="w-8 h-[1.5px] bg-olive-500"></span>
-                <span class="text-olive-700 text-xs font-bold tracking-[0.25em] uppercase">Est. 2024 · Specialty Roasters</span>
+                <span class="text-olive-700 text-xs font-bold tracking-[0.25em] uppercase">Filo Coffee</span>
             </div>
 
             {{-- Premium Serif Heading --}}
             <h1 class="font-display text-5xl md:text-7xl text-olive-900 font-bold leading-[1.05] mb-8">
-                Ritual Kopi<br>
-                <span class="text-beige-600 italic font-semibold font-display">Kelas Dunia.</span>
+                Kesederhanaan<br>
+                <span class="text-beige-600 italic font-semibold font-display">Dalam Rasa</span>
             </h1>
 
             {{-- Luxurious Body Copy --}}
@@ -426,8 +426,8 @@
                 <span class="text-olive-600 text-xs font-bold uppercase tracking-[0.2em]">Fasilitas Eksklusif</span>
                 <span class="w-5 h-[1px] bg-olive-500"></span>
             </div>
-            <h2 class="font-display text-4xl md:text-6xl text-olive-900 font-bold">
-                Pesan<br>
+            <h2 class="font-display text-4xl md:text-5xl text-olive-900 font-bold">
+                Pesan
                 <span class="text-beige-600 italic font-semibold">Pengalaman Anda.</span>
             </h2>
             <p class="text-olive-800/70 text-base md:text-lg mt-4 leading-relaxed">

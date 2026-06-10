@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Our Services')
+@section('title', 'Layanan Kami')
 @section('meta_description', 'Filo Coffee menawarkan lebih dari sekadar kopi. Nikmati layanan Home Brewing, Coworking Space, dan Private Room eksklusif.')
 
 @section('content')
@@ -29,11 +29,11 @@
                 Filo Coffee menghadirkan ruang kolaborasi, edukasi seduh mandiri, dan area pertemuan eksklusif yang dirancang untuk mendukung gaya hidup modern Anda.
             </p>
             <div class="flex flex-wrap items-center gap-4">
-                <a href="#services-overview" class="bg-olive-800 text-beige-50 hover:bg-olive-900 px-8 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg shadow-olive-900/20 inline-flex items-center gap-2 group">
+                <a href="#services-overview" class="bg-olive-800 text-beige-50 hover:bg-olive-900 px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-lg shadow-olive-900/20 inline-flex items-center gap-2 group">
                     <span>Eksplor Layanan</span>
                     <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </a>
-                <a href="{{ route('reservation.index') }}" class="border-2 border-olive-800 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-8 py-3.5 rounded-2xl font-bold transition-all duration-300 transform hover:-translate-y-0.5 inline-flex items-center gap-2">
+                <a href="{{ route('reservation.index') }}" class="border border-olive-800/30 text-olive-900 hover:bg-olive-800 hover:text-beige-50 px-8 py-3 rounded-2xl font-bold transition-all duration-300 inline-flex items-center gap-2">
                     <span>Reservasi Sekarang</span>
                 </a>
             </div>
