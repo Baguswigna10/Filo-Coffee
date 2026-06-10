@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Koleksi Biji Kopi Sangrai Pilihan | Filo Roastery')
+@section('title', 'Koleksi Biji Kopi Sangrai | Filo Coffee')
 @section('meta_description', 'Bawa pulang ritual kopi terbaik Anda. Beli biji kopi arabika pilihan Nusantara segar hasil roasting presisi di Filo Specialty Coffee.')
 
 @section('content')
@@ -36,13 +36,6 @@
      SHOP CONTENT
      ═══════════════════════════════════════ --}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pb-32">
-
-    {{-- Section Header --}}
-    <div class="mb-16 reveal">
-        <span class="text-beige-600 text-xs font-bold uppercase tracking-[0.25em] block mb-2">Filo Roastery Selection</span>
-        <h2 class="font-display text-3xl md:text-5xl text-olive-900 font-bold">Koleksi Biji Kopi Sangrai</h2>
-        <p class="text-olive-850/60 mt-4 max-w-2xl text-base leading-relaxed">Pilihan biji kopi arabika terbaik dari berbagai pelosok sabang sampai merauke, di-roast presisi oleh *head roaster* kami demi mempertahankan profil rasa aslinya.</p>
-    </div>
 
     {{-- Filters & Sort --}}
     <div class="flex flex-col lg:flex-row gap-8 mb-20 items-center justify-between reveal">
